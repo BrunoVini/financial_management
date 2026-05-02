@@ -78,6 +78,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - TypeScript narrowing for the wizard step counter in `Onboarding.svelte` (`Math.min`/`Math.max` returns `number`; the cast moved to wrap the whole expression).
+- Bumped placeholder text on `Overview`, `Months`, `MonthDetail` from "Coming in Phase 2" to "Coming in Phase 3" now that Phase 2 is closed.
+
+### Added (Phase 3)
+
+- Transactions DB module (`src/lib/db/transactions.ts`): `addExpense / addIncome / addFxTransfer` (each return `{ store, id }`), `removeExpense / removeIncome / removeFxTransfer`, `setSalaryReceived` (accepts `null` to clear), `monthExpenseTotalsByCategory`, `monthExpenseTotal`, `monthIncomeTotal`. Income totals use the salary's locked `rateToDisplay` so historical numbers stay stable; extras use live rates. 9 G/W/T tests cover each function plus mixed-currency aggregation.
 
 ### Changed
 
