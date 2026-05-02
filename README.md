@@ -10,6 +10,7 @@ See:
 
 - Spec: `docs/superpowers/specs/2026-05-02-financial-management-design.md`
 - Plan: `docs/superpowers/plans/2026-05-02-phase-1-foundation.md`
+- Changelog: [`CHANGELOG.md`](./CHANGELOG.md) — follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## Develop
 

@@ -1,0 +1,30 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- Project scaffold: Vite + Svelte + TypeScript template, configured for GitHub Pages with a conditional `base` path and Vitest test runner.
+- Runtime dependencies: `svelte-spa-router` (hash routing for GH Pages), `lucide-svelte` (icons).
+- Dev tooling: Vitest + Testing Library + jsdom, ESLint v9 (flat config) with `@typescript-eslint`, `eslint-plugin-svelte`, Prettier + `prettier-plugin-svelte`, `globals`.
+- ESLint `max-lines` rule capping non-test source files at 200 lines (skipping blank lines and comments).
+- `.editorconfig` enforcing UTF-8 / LF / 2-space indent / trim trailing whitespace (except `.md`).
+- `.nvmrc` pinning Node 22 LTS.
+- `.gitignore` entries for `.superpowers/` (brainstorm assets) and `.claude/` (local IDE state).
+- Project `README.md` with status, dev / test / build / deploy instructions, and conventions.
+- Pinned `@rolldown/binding-linux-x64-gnu` so fresh clones get the native binding.
+
+### Changed
+
+- Replaced default Vite Svelte template `App.svelte` with a placeholder for the upcoming router shell.
+
+### Removed
+
+- Deprecated `hot` option from `vite-plugin-svelte` config (no longer accepted in v7).
+
+[Unreleased]: https://github.com/BrunoVini/financial_management/commits/main
