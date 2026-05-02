@@ -66,6 +66,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Onboarding Step 3 (`Step3Balances.svelte`): one row per active currency, decimal-keyboard input, parses both pt-BR and en numeric formats.
 - Onboarding Step 4 (`Step4Holdings.svelte`): optional list of up to 10 holdings with name + type (from default investment categories) + value via MoneyInput; trash button per row, dashed +Add button.
 - Onboarding completion (`src/routes/onboarding/finish.ts`): `applyWizard(store, wizardState, today)` pure function that persists settings, seeds default categories in the chosen language, creates one account per active currency, opens the current month with the entered balances, and seeds holdings + a starting snapshot per holding (skips blank-named entries). 5 G/W/T tests cover each effect.
+- Settings page restructured into sections (`src/routes/settings/`):
+  - `Appearance.svelte` — language and theme selectors (moved from Settings.svelte).
+  - `Categories.svelte` + `CategoryRow.svelte` + `categoryPalette.ts` — Expense / Investment tabs, "+ Add category" form with name + 8-color palette swatches, list with inline rename, color recolor, archive toggle, delete. All wired through `db/categories` via `mutate(...)`.
+  - i18n keys `settings.*` and `common.*` added to both dictionaries.
 
 ### Changed
 
