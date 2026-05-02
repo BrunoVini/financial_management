@@ -98,6 +98,10 @@ export const ptBr = {
   'tx.fab.fx': 'Câmbio',
   'tx.fab.salary': 'Salário recebido',
   'tx.add': 'Adicionar',
+  'tx.error.negative':
+    'Saldo da conta ficaria negativo. Verifique o valor ou a conta selecionada.',
+  'tx.error.fxNegative':
+    'Você não tem saldo suficiente em {currency} para esta conversão.',
   'overview.networth': 'Patrimônio',
   'overview.spent': 'Gastos do mês',
   'overview.income': 'Entradas',

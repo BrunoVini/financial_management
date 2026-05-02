@@ -6,6 +6,8 @@
   import { appStore, mutate, settings, accounts, categories } from '@/lib/appStore';
   import { addExpense } from '@/lib/db/transactions';
   import { monthKey as toMonthKey } from '@/lib/db/months';
+  import { accountBalance } from '@/lib/db/accounts';
+  import { convert } from '@/lib/money';
   import type { Currency } from '@/lib/types';
 
   interface Props {
@@ -65,9 +67,27 @@
       return;
     }
     const todayKey = toMonthKey(new Date(date));
-    if (!get(appStore).months[todayKey]) {
+    const store = get(appStore);
+    if (!store.months[todayKey]) {
       error = 'No month exists for this date yet.';
       return;
+    }
+    const account = store.accounts.find((a) => a.id === accountId);
+    if (account) {
+      const current = accountBalance(store, accountId, todayKey);
+      // Expense currency may differ from the account currency: convert
+      // to the account's native currency using live rates before
+      // checking. NaN guard: if rates aren't loaded yet, skip the check
+      // rather than block the user.
+      const rates = store.ratesCache?.rates ?? {};
+      const inAccountCurrency =
+        currency === account.currency
+          ? amount
+          : convert(amount, currency, account.currency, rates);
+      if (Number.isFinite(inAccountCurrency) && current - inAccountCurrency < 0) {
+        error = $t('tx.error.negative');
+        return;
+      }
     }
     mutate(
       (s) =>

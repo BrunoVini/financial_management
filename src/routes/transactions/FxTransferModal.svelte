@@ -6,6 +6,7 @@
   import { appStore, mutate, settings } from '@/lib/appStore';
   import { addFxTransfer } from '@/lib/db/transactions';
   import { monthKey as toMonthKey } from '@/lib/db/months';
+  import { listAccountsByCurrency, accountBalance } from '@/lib/db/accounts';
   import type { Currency } from '@/lib/types';
 
   interface Props {
@@ -49,8 +50,20 @@
       return;
     }
     const key = toMonthKey(new Date(date));
-    if (!get(appStore).months[key]) {
+    const store = get(appStore);
+    if (!store.months[key]) {
       error = 'No month exists for this date yet.';
+      return;
+    }
+    // Sum balances of every account in the source currency. The user can
+    // only convert what they actually hold in fromCurrency.
+    const sourceAccounts = listAccountsByCurrency(store, fromCurrency);
+    const totalSource = sourceAccounts.reduce(
+      (sum, a) => sum + accountBalance(store, a.id, key),
+      0,
+    );
+    if (totalSource < fromAmount) {
+      error = $t('tx.error.fxNegative').replace('{currency}', fromCurrency);
       return;
     }
     mutate(

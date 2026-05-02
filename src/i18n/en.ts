@@ -98,6 +98,10 @@ export const en = {
   'tx.fab.fx': 'FX exchange',
   'tx.fab.salary': 'Salary received',
   'tx.add': 'Add',
+  'tx.error.negative':
+    'Account balance would go negative. Check the amount or selected account.',
+  'tx.error.fxNegative':
+    "You don't have enough balance in {currency} for this conversion.",
   'overview.networth': 'Net worth',
   'overview.spent': 'Spent this month',
   'overview.income': 'Income',
