@@ -9,6 +9,8 @@
     placeholder?: string;
     disabled?: boolean;
     label?: string;
+    onValueChange?: (next: number) => void;
+    onCurrencyChange?: (next: Currency) => void;
   }
 
   let {
@@ -18,6 +20,8 @@
     placeholder = '0,00',
     disabled = false,
     label,
+    onValueChange,
+    onCurrencyChange,
   }: Props = $props();
 
   let raw = $state(value === 0 ? '' : String(value));
@@ -32,6 +36,12 @@
   function handleInput(e: Event) {
     raw = (e.target as HTMLInputElement).value;
     value = parseAmount(raw);
+    onValueChange?.(value);
+  }
+
+  function handleCurrencyChange(next: Currency) {
+    currency = next;
+    onCurrencyChange?.(next);
   }
 </script>
 
@@ -49,7 +59,13 @@
       value={raw}
       oninput={handleInput}
     />
-    <CurrencyPicker bind:value={currency} options={currencies} {disabled} ariaLabel="Currency" />
+    <CurrencyPicker
+      value={currency}
+      options={currencies}
+      {disabled}
+      ariaLabel="Currency"
+      onchange={handleCurrencyChange}
+    />
   </div>
 </label>
 

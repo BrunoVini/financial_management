@@ -2,11 +2,13 @@
   import { t } from '@/i18n';
   import Appearance from './settings/Appearance.svelte';
   import Categories from './settings/Categories.svelte';
+  import General from './settings/General.svelte';
 </script>
 
 <section class="page">
   <h1>{$t('nav.settings')}</h1>
   <Appearance />
+  <General />
   <Categories />
 </section>
 

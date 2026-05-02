@@ -70,12 +70,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Appearance.svelte` — language and theme selectors (moved from Settings.svelte).
   - `Categories.svelte` + `CategoryRow.svelte` + `categoryPalette.ts` — Expense / Investment tabs, "+ Add category" form with name + 8-color palette swatches, list with inline rename, color recolor, archive toggle, delete. All wired through `db/categories` via `mutate(...)`.
   - i18n keys `settings.*` and `common.*` added to both dictionaries.
+  - `General.svelte` — display currency picker, multi-select active currencies (display-currency and in-use currencies are locked), salary amount + currency via `MoneyInput`, pay-day numeric input.
 
 ### Changed
 
 - Replaced default Vite Svelte template `App.svelte` with a placeholder for the upcoming router shell.
 - Replaced the Vite Svelte template's heavy demo `app.css` with a lean theme-driven stylesheet (CSS bundle dropped from ~4.1 kB to ~1.15 kB).
 - Swapped Vitest test environment from `jsdom` to `happy-dom` to avoid an `ERR_REQUIRE_ESM` failure in `@asamuzakjp/css-color` under Node 20.x.
+- `MoneyInput.svelte` and `CurrencyPicker.svelte` now accept optional `onValueChange` / `onCurrencyChange` / `onchange` callbacks alongside `bind:`. Pages that read from a derived store (where `bind:` is awkward) can hook updates through callbacks instead.
 
 ### Removed
 
