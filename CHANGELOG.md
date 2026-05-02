@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Both share the same item list (Overview / Months / Investments / Settings), `lucide-svelte` icons, and `svelte-spa-router` `link`/`location` for active-state detection.
 - Placeholder route pages (`src/routes/`): `Overview`, `Months`, `MonthDetail` (reads `:key` from `svelte-spa-router` `params`), `Investments`, `Settings`, `Onboarding`. Settings already wires the language and theme selects to the i18n and theme stores; the rest are minimal "coming in Phase 2/3" stubs ready to be filled in.
 - App shell (`src/App.svelte`): mounts the four placeholder routes plus `MonthDetail` and `Onboarding` via `<Router {routes} />`, renders `<Sidebar />` and `<BottomNav />` around `<main>`, and applies the active palette to `<html>` reactively via `$effect(() => applyThemeToDocument($theme))`. Mobile lifts `<main>` 80px to clear the bottom nav; desktop drops the lift and the bottom nav hides.
+- GitHub Pages deploy workflow (`.github/workflows/deploy.yml`): on every push to `main` (or manual `workflow_dispatch`), CI runs `npm ci`, `npm run lint`, `npm test`, and `npm run build` (with `GITHUB_PAGES=true` to prefix asset URLs with `/financial_management/`), then uploads `dist/` and deploys via `actions/deploy-pages@v4`. Node version is read from `.nvmrc`.
 
 ### Changed
 

@@ -35,6 +35,8 @@ npm run build
 
 Push to `main`. The GitHub Action at `.github/workflows/deploy.yml` builds with `GITHUB_PAGES=true` and publishes to GitHub Pages.
 
+> **First-time setup:** in the repository, go to **Settings → Pages** and set **Source** to **GitHub Actions**. The next push to `main` (or a manual `workflow_dispatch` run) will publish the site.
+
 ## Conventions
 
 - All identifiers, filenames, comments, and commit messages in **English**.
