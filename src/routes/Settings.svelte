@@ -5,6 +5,7 @@
   import General from './settings/General.svelte';
   import Backup from './settings/Backup.svelte';
   import Reset from './settings/Reset.svelte';
+  import Subscriptions from './settings/Subscriptions.svelte';
 </script>
 
 <section class="page">
@@ -12,6 +13,7 @@
   <Appearance />
   <General />
   <Categories />
+  <Subscriptions />
   <Backup />
   <Reset />
 </section>

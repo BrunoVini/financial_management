@@ -14,7 +14,8 @@
   import { settings, mutate } from '@/lib/appStore';
   import { get } from 'svelte/store';
   import { ensureRates } from '@/lib/rates';
-  import { rolloverIfNeeded } from '@/lib/db/months';
+  import { rolloverIfNeeded, monthKey as toMonthKey } from '@/lib/db/months';
+  import { applyDueSubscriptions } from '@/lib/db/recurring';
   import { transactionModal, closeTransactionModal } from '@/lib/uiStore';
   import ExpenseModal from '@/routes/transactions/ExpenseModal.svelte';
   import IncomeModal from '@/routes/transactions/IncomeModal.svelte';
@@ -49,7 +50,13 @@
   }
 
   function bootRollover() {
-    mutate((store) => rolloverIfNeeded(store, new Date()).store);
+    const today = new Date();
+    mutate((store) => {
+      const rolled = rolloverIfNeeded(store, today).store;
+      // Apply subscriptions due this month after rollover so the new
+      // month — if any — already has its recurring expenses recorded.
+      return applyDueSubscriptions(rolled, toMonthKey(today), today);
+    });
   }
 
   let booted = false;
