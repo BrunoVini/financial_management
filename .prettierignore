@@ -1,0 +1,6 @@
+dist
+node_modules
+.svelte-kit
+.superpowers
+docs/superpowers/specs
+docs/superpowers/plans
