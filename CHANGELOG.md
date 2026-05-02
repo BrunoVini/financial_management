@@ -53,6 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Months DB module (`src/lib/db/months.ts`): `monthKey`, `nextMonthKey`, `createMonth`, `getOrCreateCurrentMonth`, `closeMonth`, and `rolloverIfNeeded(store, today)` — handles `open → grace → closed` transitions, inherits `closingBalances → openingBalances` across months, fills intermediate months when multiple periods passed, and sweeps elapsed grace deadlines into `closed`. `GRACE_DAYS = 7` matches the spec.
 - Investments DB module (`src/lib/db/investments.ts`): `addHolding`, `removeHolding` (cascades to contributions + snapshots), `addContribution`, `addSnapshot`, and `holdingReturn(store, holdingId)` returning `{ contributed, marketValue, deltaAbsolute, deltaPercent }` based on summed contributions and the latest snapshot.
 - Reactive `appStore` (`src/lib/appStore.ts`): a Svelte writable wrapping `loadStore()` that auto-persists every change via `saveStore()`. `mutate(fn)` helper for `Store → Store` updates. Derived selectors `settings`, `categories`, `accounts`, `months`, `investments`. Bidirectionally syncs `settings.language` ↔ `locale` store and `settings.theme` ↔ `theme` store, including the initial bootstrap so a refresh restores the saved language/theme.
+- `Card.svelte` glass primitive: optional `title`, optional `actions` snippet, configurable `variant` (`glass` / `raised`) and `padding` (`sm` / `md` / `lg`). Uses Svelte 5 runes + Snippet props. Body renders via `children` snippet.
 
 ### Changed
 
