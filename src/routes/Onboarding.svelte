@@ -17,10 +17,10 @@
   });
 
   function next() {
-    wizard.update((w) => ({ ...w, step: Math.min(4, (w.step + 1) as 1 | 2 | 3 | 4) }));
+    wizard.update((w) => ({ ...w, step: Math.min(4, w.step + 1) as 1 | 2 | 3 | 4 }));
   }
   function back() {
-    wizard.update((w) => ({ ...w, step: Math.max(1, (w.step - 1) as 1 | 2 | 3 | 4) }));
+    wizard.update((w) => ({ ...w, step: Math.max(1, w.step - 1) as 1 | 2 | 3 | 4 }));
   }
 
   function finish() {

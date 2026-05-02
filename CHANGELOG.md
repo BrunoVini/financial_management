@@ -73,6 +73,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `General.svelte` — display currency picker, multi-select active currencies (display-currency and in-use currencies are locked), salary amount + currency via `MoneyInput`, pay-day numeric input.
 - Backup module (`src/lib/backup.ts`): `validateImportedStore(raw)` strict shape check (rejects null/primitives, wrong `schemaVersion`, missing required keys); `backupFilename(date)` formats `fm-backup-YYYY-MM-DD.json`. 5 G/W/T tests.
 - `Backup.svelte` settings section: Export downloads the full `Store` as a timestamped JSON file via `Blob` + `<a download>`. Import opens a hidden file picker, parses JSON, validates the schema, asks for confirmation before overwriting, then replaces the entire store. Inline error if the file is malformed.
+- App boot logic in `App.svelte`: when an onboarded user opens the app, `rolloverIfNeeded(store, today)` runs first so any month that lapsed gets transitioned and the current month exists, then `ensureRates(activeCurrencies)` fetches frankfurter (cached daily) — a yellow "stale rates" banner appears at the top of `<main>` if the network call fails and the local cache is older than today.
+
+### Fixed
+
+- TypeScript narrowing for the wizard step counter in `Onboarding.svelte` (`Math.min`/`Math.max` returns `number`; the cast moved to wrap the whole expression).
 
 ### Changed
 
