@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `src/components/Sidebar.svelte` — desktop side rail (220px, glass background, gradient pill on active item, hidden ≤768px).
   - `src/components/BottomNav.svelte` — mobile bottom bar (fixed, ≥44px touch targets, accent color on active item, only visible ≤768px).
   - Both share the same item list (Overview / Months / Investments / Settings), `lucide-svelte` icons, and `svelte-spa-router` `link`/`location` for active-state detection.
+- Placeholder route pages (`src/routes/`): `Overview`, `Months`, `MonthDetail` (reads `:key` from `svelte-spa-router` `params`), `Investments`, `Settings`, `Onboarding`. Settings already wires the language and theme selects to the i18n and theme stores; the rest are minimal "coming in Phase 2/3" stubs ready to be filled in.
 
 ### Changed
 
