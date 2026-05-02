@@ -63,6 +63,20 @@ button {
   cursor: pointer;
 }
 
+/* Visible focus ring for every keyboard-reachable control. Mouse users
+   don't see it (`:focus-visible` only triggers for keyboard / a11y
+   tooling). Components with their own ring keep it; this is the
+   safety net. */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Honor prefers-reduced-motion for users who opted in at the OS level.
+   This zeroes out CSS-driven motion globally; chart animations are
+   handled per-component (see Chart.svelte). */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

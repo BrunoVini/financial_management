@@ -133,6 +133,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - QuickAddFab gains a "Compra parcelada" / "Installment plan" entry (with a `CreditCard` icon).
   - `MonthDetail.svelte` shows a "Parcelas pendentes" card listing installments due in the current month (or earlier, if missed) with "Marcar paga" (creates the Expense and increments paidIndices) and "Remover plano" buttons; both disabled while the month is locked.
   - `Overview.svelte` shows a "Dívidas pendentes" card with the total upcoming debt converted to display currency plus a list of plans with remaining-installments × per-installment value. Hidden when there are no pending installments.
+- Pure chart series builders (`src/lib/charts/`):
+  - `netWorthHistory(store, displayCurrency, today)` → 12-month net-worth series in display currency, gracefully falling back to the previous known total in months without data.
+  - `expensesDonut(store, monthKey, displayCurrency, rates)` → per-category totals with category color, empty array when no expenses.
+  - `investmentSeries(store, displayCurrency, rates)` → cumulative contributions and market value across every month with activity; falls back to cumulative contributions when a holding has no snapshot yet.
+  - `holdingSparkline(store, holdingId)` → per-holding snapshot timeline.
+  - 9 G/W/T tests covering all four.
+- Investments page (`src/routes/Investments.svelte`):
+  - Empty state when no holdings exist.
+  - Combined area+line chart of cumulative contributions vs market value when there's enough history (≥ 2 points).
+  - Auto-fill responsive grid of `HoldingCard` (each with name + type, market value native + converted, contributed, return absolute and %, sparkline, "Aporte" / "Snapshot" buttons).
+  - Top-right global "Aporte" / "Snapshot" buttons.
+  - `ContributionModal.svelte` (holding + amount + currency + date) and `SnapshotModal.svelte` (holding + market value + currency + date), both with optional `presetHoldingId` for the per-card buttons.
+- `NetWorthHistoryCard.svelte` on Overview between the net-worth pills and the summary grid: 12-month area chart with gradient fill.
+- `ExpensesDonut.svelte` on MonthDetail: per-category donut hidden when the month has no expenses.
+- Command palette (`Cmd/Ctrl+K`): `src/components/CommandPalette.svelte` + `commandPalette/commands.ts`. Searchable list of navigation, transaction-modal and theme/language commands. Arrow keys + Enter to execute, Esc + backdrop click to dismiss; toggle hotkey works globally via `svelte:window` listener.
+- Accessibility polish: global `:focus-visible` ring (accent color, 2px, offset 2px) so every keyboard-reachable control shows the focus state by default. Component-level rings stay where they exist; this is the safety net.
 
 ### Changed
 
