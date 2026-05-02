@@ -47,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `svelte-check` now points at `tsconfig.app.json` directly (instead of the references-based root `tsconfig.json`) — eliminates 4 pre-existing `composite`/`noEmit` warnings inherited from the Vite template.
 - `tests/lib/rates.test.ts` now uses `globalThis.fetch` (typed) instead of `global.fetch` so the test type-checks cleanly under svelte-check.
 - Silenced TypeScript 7 `baseUrl` deprecation warning via `ignoreDeprecations: "6.0"` in `tsconfig.app.json`.
+- UUID helper (`src/lib/uuid.ts`): `newId()` thin wrapper around `crypto.randomUUID()` so tests of consumers can stub the call site without monkey-patching `crypto`.
 
 ### Changed
 
