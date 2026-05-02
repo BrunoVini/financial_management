@@ -4,7 +4,7 @@ A static, client-side personal finance app. Multi-currency (CAD / USD / BRL out 
 
 ## Status
 
-Phase 1 — Foundation. Scaffold + theme + i18n + storage + rates + app shell + GitHub Pages deploy. No domain features yet (Phase 2 / 3).
+**v1.0.0** — feature-complete personal finance app: multi-currency balances, onboarding wizard, transactions (expenses, incomes, FX, salary), installment plans, investments with charts, budgets, recurring subscriptions, search/filters, JSON + CSV backup.
 
 See:
 

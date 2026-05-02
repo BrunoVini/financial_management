@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-02
+
+First public release. Covers Phases 1-5: foundation, onboarding +
+configuration, transactions + Overview/Months/MonthDetail views,
+investments + charts + polish, and recurring/budgets/filters/CSV.
+
 ### Added
 
 - Project scaffold: Vite + Svelte + TypeScript template, configured for GitHub Pages with a conditional `base` path and Vitest test runner.
@@ -161,4 +167,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Deprecated `hot` option from `vite-plugin-svelte` config (no longer accepted in v7).
 
-[Unreleased]: https://github.com/BrunoVini/financial_management/commits/main
+[Unreleased]: https://github.com/BrunoVini/financial_management/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/BrunoVini/financial_management/releases/tag/v1.0.0
