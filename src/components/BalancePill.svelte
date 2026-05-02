@@ -16,7 +16,7 @@
 <span class="pill" data-currency={currency}>
   <span class="code">{currency}</span>
   <span class="amount">{formatMoney(amount, currency, language)}</span>
-  {#if convertedAmount !== undefined && convertedCurrency && convertedCurrency !== currency}
+  {#if convertedAmount !== undefined && Number.isFinite(convertedAmount) && convertedCurrency && convertedCurrency !== currency}
     <span class="conv">≈ {formatMoney(convertedAmount, convertedCurrency, language)}</span>
   {/if}
 </span>

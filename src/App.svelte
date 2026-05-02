@@ -50,14 +50,31 @@
     mutate((store) => rolloverIfNeeded(store, new Date()).store);
   }
 
+  let booted = false;
+
+  function runBoot(currencies: string[]) {
+    if (booted) return;
+    booted = true;
+    bootRollover();
+    bootRates(currencies);
+  }
+
   onMount(() => {
     const s = get(settings);
-    if (!s.onboarded) {
-      if (router.location !== '/onboarding') push('/onboarding');
-      return; // skip rates + rollover until the user finishes onboarding
+    if (!s.onboarded && router.location !== '/onboarding') {
+      push('/onboarding');
+    } else if (s.onboarded) {
+      runBoot(s.activeCurrencies);
     }
-    bootRollover();
-    bootRates(s.activeCurrencies);
+  });
+
+  // After onboarding completes, settings.onboarded flips and triggers
+  // boot — without this, ratesCache stays null and Overview shows NaN
+  // until the user reloads the page.
+  $effect(() => {
+    if ($settings.onboarded) {
+      runBoot($settings.activeCurrencies);
+    }
   });
 </script>
 

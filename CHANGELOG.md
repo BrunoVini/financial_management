@@ -110,6 +110,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Browser tab title fixed: was the leftover `temp-app` from the Vite scaffold, now shows `Financial Management`. Set `<html lang="pt-BR">`, added `theme-color` and `description` meta tags.
 - Custom favicon (gradient roxo→rosa with a wallet outline) replacing the default Svelte template icon.
 
+### Fixed (Phase 3 polish)
+
+- `R$ NaN` artifact on Overview pills right after onboarding: `App.svelte` `onMount` early-returned when `settings.onboarded === false` and never came back to fetch rates, leaving `ratesCache === null` and forcing `convert()` to return `NaN`. A `$effect` now reruns the boot (rollover + rates fetch) the moment `settings.onboarded` flips to `true`, guarded by a `booted` flag to avoid re-fetching on subsequent setting changes.
+- `BalancePill` defensively skips the converted line when `convertedAmount` is not a finite number (e.g. while the daily rates request is still in flight).
+
 ### Changed
 
 - Replaced default Vite Svelte template `App.svelte` with a placeholder for the upcoming router shell.
