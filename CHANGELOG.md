@@ -120,6 +120,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - "Danger zone" Settings section with an "Erase all data" button that opens a confirmation modal. The destructive action is only enabled after the user types `EXCLUIR` (PT-BR) or `ERASE` (EN) in the confirmation field. On confirm, the store is replaced with `defaultStore()` and the user is redirected to `/onboarding`.
 
+### Added (Phase 4)
+
+- `echarts@^6` runtime dependency for charts.
+- `<Chart option height>` Svelte wrapper (`src/components/Chart.svelte`) that lazy-loads ECharts via `import('echarts')` inside `onMount` (the chunk only ships on routes that render a chart). Renders SVG, observes container resizes, disposes cleanly, and re-applies the theme reactively when the palette changes. Honors `prefers-reduced-motion` by disabling animations.
+- `chartTheme(palette, reducedMotion)` helper (`src/lib/charts/theme.ts`) builds an ECharts option fragment tied to the active theme tokens (axis colors, tooltip background, default series colors from the accent gradient, dashed split lines). Components merge it with their own option before `setOption`.
+
 ### Changed
 
 - Replaced default Vite Svelte template `App.svelte` with a placeholder for the upcoming router shell.
