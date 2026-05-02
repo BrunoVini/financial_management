@@ -15,6 +15,11 @@
   import { get } from 'svelte/store';
   import { ensureRates } from '@/lib/rates';
   import { rolloverIfNeeded } from '@/lib/db/months';
+  import { transactionModal, closeTransactionModal } from '@/lib/uiStore';
+  import ExpenseModal from '@/routes/transactions/ExpenseModal.svelte';
+  import IncomeModal from '@/routes/transactions/IncomeModal.svelte';
+  import FxTransferModal from '@/routes/transactions/FxTransferModal.svelte';
+  import SalaryReceivedModal from '@/routes/transactions/SalaryReceivedModal.svelte';
 
   let ratesStale = $state(false);
 
@@ -70,6 +75,11 @@
     <BottomNav />
   {/if}
 </div>
+
+<ExpenseModal open={$transactionModal === 'expense'} onclose={closeTransactionModal} />
+<IncomeModal open={$transactionModal === 'income'} onclose={closeTransactionModal} />
+<FxTransferModal open={$transactionModal === 'fx'} onclose={closeTransactionModal} />
+<SalaryReceivedModal open={$transactionModal === 'salary'} onclose={closeTransactionModal} />
 
 <style>
   .layout {
