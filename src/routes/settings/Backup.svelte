@@ -2,9 +2,11 @@
   import { get } from 'svelte/store';
   import { t } from '@/i18n';
   import Card from '@/components/Card.svelte';
-  import { appStore, mutate } from '@/lib/appStore';
+  import { appStore, mutate, categories, accounts } from '@/lib/appStore';
   import { backupFilename, validateImportedStore } from '@/lib/backup';
-  import { Download, Upload } from 'lucide-svelte';
+  import { toCsv, downloadCsv } from '@/lib/csv';
+  import { monthKey as toMonthKey } from '@/lib/db/months';
+  import { Download, Upload, FileSpreadsheet } from 'lucide-svelte';
 
   let fileInput: HTMLInputElement | null = $state(null);
   let error: string | null = $state(null);
@@ -20,6 +22,24 @@
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
+  }
+
+  function exportCurrentMonthCsv() {
+    const key = toMonthKey(new Date());
+    const month = get(appStore).months[key];
+    if (!month) return;
+    const headers = ['date', 'currency', 'amount', 'category', 'account', 'note'];
+    const catName = (id: string) => $categories.expense.find((c) => c.id === id)?.name ?? '';
+    const accName = (id: string) => $accounts.find((a) => a.id === id)?.name ?? '';
+    const rows = month.expenses.map((e) => [
+      e.date,
+      e.currency,
+      e.amount,
+      catName(e.categoryId),
+      accName(e.accountId),
+      e.note ?? '',
+    ]);
+    downloadCsv(`expenses-${key}.csv`, toCsv(headers, rows));
   }
 
   function pickFile() {
@@ -64,6 +84,10 @@
     <button type="button" onclick={pickFile}>
       <Upload size={16} />
       {$t('settings.backup.import')}
+    </button>
+    <button type="button" onclick={exportCurrentMonthCsv}>
+      <FileSpreadsheet size={16} />
+      {$t('settings.backup.export.csv')}
     </button>
     <input
       bind:this={fileInput}
