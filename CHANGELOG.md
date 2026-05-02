@@ -71,6 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Categories.svelte` + `CategoryRow.svelte` + `categoryPalette.ts` — Expense / Investment tabs, "+ Add category" form with name + 8-color palette swatches, list with inline rename, color recolor, archive toggle, delete. All wired through `db/categories` via `mutate(...)`.
   - i18n keys `settings.*` and `common.*` added to both dictionaries.
   - `General.svelte` — display currency picker, multi-select active currencies (display-currency and in-use currencies are locked), salary amount + currency via `MoneyInput`, pay-day numeric input.
+- Backup module (`src/lib/backup.ts`): `validateImportedStore(raw)` strict shape check (rejects null/primitives, wrong `schemaVersion`, missing required keys); `backupFilename(date)` formats `fm-backup-YYYY-MM-DD.json`. 5 G/W/T tests.
+- `Backup.svelte` settings section: Export downloads the full `Store` as a timestamped JSON file via `Blob` + `<a download>`. Import opens a hidden file picker, parses JSON, validates the schema, asks for confirmation before overwriting, then replaces the entire store. Inline error if the file is malformed.
 
 ### Changed
 

@@ -3,6 +3,7 @@
   import Appearance from './settings/Appearance.svelte';
   import Categories from './settings/Categories.svelte';
   import General from './settings/General.svelte';
+  import Backup from './settings/Backup.svelte';
 </script>
 
 <section class="page">
@@ -10,6 +11,7 @@
   <Appearance />
   <General />
   <Categories />
+  <Backup />
 </section>
 
 <style>
