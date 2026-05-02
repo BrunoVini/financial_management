@@ -1,5 +1,20 @@
 <script lang="ts">
   import { router } from 'svelte-spa-router';
+  import { t } from '@/i18n';
+  import Card from '@/components/Card.svelte';
+  import ActivityList from '@/components/ActivityList.svelte';
+  import MonthHeader from './monthDetail/MonthHeader.svelte';
+  import { appStore, mutate, settings } from '@/lib/appStore';
+  import { monthActivity } from '@/lib/activity';
+  import {
+    removeExpense,
+    removeIncome,
+    removeFxTransfer,
+    setSalaryReceived,
+  } from '@/lib/db/transactions';
+  import { openTransactionModal } from '@/lib/uiStore';
+  import { Plus } from 'lucide-svelte';
+  import type { ActivityEntry } from '@/components/ActivityList.svelte';
 
   function readKey(): string {
     const params = router.params;
@@ -8,19 +23,89 @@
     }
     return '';
   }
+
+  let key = $derived(readKey());
+  let month = $derived($appStore.months[key]);
+  let unlocked = $state(false);
+  let locked = $derived(!!month && month.status === 'closed' && !unlocked);
+
+  let entries = $derived(month ? monthActivity($appStore, month) : []);
+
+  function deleteEntry(entry: ActivityEntry) {
+    if (locked) return;
+    if (entry.kind === 'expense') {
+      mutate((s) => removeExpense(s, key, entry.id));
+    } else if (entry.kind === 'income') {
+      mutate((s) => removeIncome(s, key, entry.id));
+    } else if (entry.kind === 'fx') {
+      mutate((s) => removeFxTransfer(s, key, entry.id));
+    } else if (entry.kind === 'salary') {
+      mutate((s) => setSalaryReceived(s, key, null));
+    }
+  }
 </script>
 
-<section>
-  <h1>Month {readKey()}</h1>
-  <p>Coming in Phase 3.</p>
-</section>
+{#if !month}
+  <section class="page">
+    <p>Mês não encontrado.</p>
+  </section>
+{:else}
+  <section class="page">
+    <MonthHeader {month} {locked} onUnlock={() => (unlocked = true)} />
+
+    <Card title={$t('overview.activity')}>
+      <ActivityList
+        {entries}
+        language={$settings.language}
+        onDelete={locked ? undefined : deleteEntry}
+      />
+    </Card>
+
+    <div class="adders">
+      <button type="button" disabled={locked} onclick={() => openTransactionModal('expense')}>
+        <Plus size={16} /> {$t('monthDetail.expenses')}
+      </button>
+      <button type="button" disabled={locked} onclick={() => openTransactionModal('income')}>
+        <Plus size={16} /> {$t('monthDetail.incomes')}
+      </button>
+      <button type="button" disabled={locked} onclick={() => openTransactionModal('fx')}>
+        <Plus size={16} /> {$t('monthDetail.fx')}
+      </button>
+      <button type="button" disabled={locked} onclick={() => openTransactionModal('salary')}>
+        <Plus size={16} /> {$t('overview.salary.received')}
+      </button>
+    </div>
+  </section>
+{/if}
 
 <style>
-  section {
+  .page {
     padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: 880px;
   }
-  h1 {
-    font-size: var(--space-6);
-    margin: 0 0 var(--space-4);
+  .adders {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .adders button {
+    background: var(--bg-raised);
+    color: var(--text-primary);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-3);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 40px;
+    font: inherit;
+  }
+  .adders button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 </style>

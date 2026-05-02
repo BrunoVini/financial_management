@@ -84,6 +84,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Transactions DB module (`src/lib/db/transactions.ts`): `addExpense / addIncome / addFxTransfer` (each return `{ store, id }`), `removeExpense / removeIncome / removeFxTransfer`, `setSalaryReceived` (accepts `null` to clear), `monthExpenseTotalsByCategory`, `monthExpenseTotal`, `monthIncomeTotal`. Income totals use the salary's locked `rateToDisplay` so historical numbers stay stable; extras use live rates. 9 G/W/T tests cover each function plus mixed-currency aggregation.
 - `accountBalance(store, id, monthKey)` now folds transactions in: starts from `openingBalance`, then for every month ≤ `monthKey` adds incoming amounts (extra incomes / salary / fx-transfer destinations matching the account currency) and subtracts outgoing amounts (expenses tied to the account; fx-transfer sources). 5 new G/W/T tests cover each path plus the month cutoff.
+- `Modal.svelte` accessible dialog primitive: backdrop + dialog with `aria-modal`, focus trap on Tab/Shift-Tab, ESC + backdrop click to close, returns focus to the previously-focused element on close, three width presets, fade + rise animations honoring `prefers-reduced-motion`.
+- Transaction modals (`src/routes/transactions/`):
+  - `ExpenseModal.svelte` — amount + currency + category + account + date + note → `addExpense`. Auto-picks first matching account when currency flips.
+  - `IncomeModal.svelte` — amount + currency + date + note → `addIncome`.
+  - `FxTransferModal.svelte` — paired from/to amounts and currencies, computed rate, validates `from !== to` and amounts > 0.
+  - `SalaryReceivedModal.svelte` — pre-fills from `settings`, suggests live rate from `ratesCache`, locks `rateToDisplay` via `setSalaryReceived`.
+- `uiStore.transactionModal` writable (`expense | income | fx | salary | null`) plus `openTransactionModal(kind)` / `closeTransactionModal()` helpers; `App.svelte` renders all four modals at the root.
+- `BalancePill.svelte` (currency code + native amount + optional converted) and `ActivityList.svelte` (kinded entries with colored dot, sign, optional delete, empty-state).
+- `src/lib/activity.ts`: `monthActivity(store, month)` normalizes salary/expenses/extra incomes/fx transfers into `ActivityEntry` rows sorted by date desc.
+- Real Overview dashboard (`Overview.svelte` + `overview/{NetWorth,MonthSummary,Salary,Invested}Card.svelte`):
+  - `NetWorthCard` — total in display currency + per-currency `BalancePill`s; gradient title.
+  - `MonthSummaryCard` — spent / income / free balance with semantic colors and delta-aware coloring.
+  - `SalaryCard` — only renders when `salaryAmount > 0`; shows "Mark received" button or the locked "received on X with rate Y" state.
+  - `InvestedCard` — total invested across holdings.
+  - Activity feed (last 10 entries) and a circular FAB that opens `ExpenseModal`.
+- `Months.svelte` — vertical timeline (newest first) of every existing month with a status badge (Aberto/Graça/Fechado) and the per-month income / spent / balance in the display currency. Empty state when only the current month exists.
+- `MonthDetail.svelte` (+ `monthDetail/MonthHeader.svelte`) — header with status badge and "closed month" banner that unlocks editing on demand; activity list with delete (disabled while locked); 4 dashed "+" buttons that open the matching transaction modals.
 
 ### Changed
 
