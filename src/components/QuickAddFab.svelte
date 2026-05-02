@@ -1,12 +1,19 @@
 <script lang="ts">
-  import { Plus, ArrowDownCircle, ArrowUpCircle, ArrowLeftRight, Wallet } from 'lucide-svelte';
+  import {
+    Plus,
+    ArrowDownCircle,
+    ArrowUpCircle,
+    ArrowLeftRight,
+    Wallet,
+    CreditCard,
+  } from 'lucide-svelte';
   import { t } from '@/i18n';
   import { openTransactionModal } from '@/lib/uiStore';
   import { settings } from '@/lib/appStore';
 
   let open = $state(false);
 
-  function pick(kind: 'expense' | 'income' | 'fx' | 'salary') {
+  function pick(kind: 'expense' | 'income' | 'fx' | 'salary' | 'installment') {
     open = false;
     openTransactionModal(kind);
   }
@@ -38,6 +45,10 @@
       <button type="button" role="menuitem" onclick={() => pick('fx')}>
         <ArrowLeftRight size={18} />
         <span>{$t('tx.fab.fx')}</span>
+      </button>
+      <button type="button" role="menuitem" onclick={() => pick('installment')}>
+        <CreditCard size={18} />
+        <span>{$t('tx.fab.installment')}</span>
       </button>
       {#if $settings.salaryAmount > 0}
         <button type="button" role="menuitem" onclick={() => pick('salary')}>

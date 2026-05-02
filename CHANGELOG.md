@@ -125,6 +125,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `echarts@^6` runtime dependency for charts.
 - `<Chart option height>` Svelte wrapper (`src/components/Chart.svelte`) that lazy-loads ECharts via `import('echarts')` inside `onMount` (the chunk only ships on routes that render a chart). Renders SVG, observes container resizes, disposes cleanly, and re-applies the theme reactively when the palette changes. Honors `prefers-reduced-motion` by disabling animations.
 - `chartTheme(palette, reducedMotion)` helper (`src/lib/charts/theme.ts`) builds an ECharts option fragment tied to the active theme tokens (axis colors, tooltip background, default series colors from the accent gradient, dashed split lines). Components merge it with their own option before `setOption`.
+- Negative-balance guards on `ExpenseModal` and `FxTransferModal`: an expense is rejected if it would push the targeted account below zero (after converting to the account's native currency); an FX transfer is rejected if the user doesn't hold enough total balance in the source currency.
+- Installments / future-debt feature:
+  - New `InstallmentPlan` type on the `Store` (description, total, count, currency, account, category, firstMonthKey, paidIndices). `loadStore()` soft-migrates older payloads by backfilling `installments: []`.
+  - `src/lib/db/installments.ts`: `addInstallmentPlan`, `removeInstallmentPlan`, `perInstallmentAmount`, `installmentMonth(plan, index)` (walks forward from `firstMonthKey`), `installmentsPendingThrough` / `installmentsDueInMonth`, `totalUpcomingDebt(store, displayCurrency, rates)`, `payInstallment(store, planId, index, date)` which adds a real `Expense` to the right month and records the index as paid. Removing a plan does not delete already-paid expenses (audit trail). 9 G/W/T tests.
+  - `InstallmentModal.svelte`: description + total + installment count + currency + first month + category + account; shows the computed per-installment value.
+  - QuickAddFab gains a "Compra parcelada" / "Installment plan" entry (with a `CreditCard` icon).
+  - `MonthDetail.svelte` shows a "Parcelas pendentes" card listing installments due in the current month (or earlier, if missed) with "Marcar paga" (creates the Expense and increments paidIndices) and "Remover plano" buttons; both disabled while the month is locked.
+  - `Overview.svelte` shows a "Dívidas pendentes" card with the total upcoming debt converted to display currency plus a list of plans with remaining-installments × per-installment value. Hidden when there are no pending installments.
 
 ### Changed
 

@@ -20,6 +20,7 @@
   import IncomeModal from '@/routes/transactions/IncomeModal.svelte';
   import FxTransferModal from '@/routes/transactions/FxTransferModal.svelte';
   import SalaryReceivedModal from '@/routes/transactions/SalaryReceivedModal.svelte';
+  import InstallmentModal from '@/routes/installments/InstallmentModal.svelte';
 
   let ratesStale = $state(false);
 
@@ -97,6 +98,7 @@
 <IncomeModal open={$transactionModal === 'income'} onclose={closeTransactionModal} />
 <FxTransferModal open={$transactionModal === 'fx'} onclose={closeTransactionModal} />
 <SalaryReceivedModal open={$transactionModal === 'salary'} onclose={closeTransactionModal} />
+<InstallmentModal open={$transactionModal === 'installment'} onclose={closeTransactionModal} />
 
 <style>
   .layout {

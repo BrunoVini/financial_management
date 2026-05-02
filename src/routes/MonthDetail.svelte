@@ -4,6 +4,7 @@
   import Card from '@/components/Card.svelte';
   import ActivityList from '@/components/ActivityList.svelte';
   import MonthHeader from './monthDetail/MonthHeader.svelte';
+  import PendingInstallments from './monthDetail/PendingInstallments.svelte';
   import { appStore, mutate, settings } from '@/lib/appStore';
   import { monthActivity } from '@/lib/activity';
   import {
@@ -52,6 +53,8 @@
 {:else}
   <section class="page">
     <MonthHeader {month} {locked} onUnlock={() => (unlocked = true)} />
+
+    <PendingInstallments monthKey={key} {locked} />
 
     <Card title={$t('overview.activity')}>
       <ActivityList

@@ -19,20 +19,27 @@ export function defaultStore(): Store {
     accounts: [],
     months: {},
     investments: { holdings: [], contributions: [], snapshots: [] },
+    installments: [],
     ratesCache: null,
   };
 }
 
 export function loadStore(): Store {
   const raw = localStorage.getItem(ROOT_KEY);
-  if (!raw) return defaultStore();
+  let store: Store;
+  if (!raw) {
+    return defaultStore();
+  }
   try {
     const parsed = JSON.parse(raw);
-    if (parsed?.schemaVersion === 1) return parsed as Store;
-    return defaultStore();
+    if (parsed?.schemaVersion === 1) store = parsed as Store;
+    else return defaultStore();
   } catch {
     return defaultStore();
   }
+  // Soft migration: backfill optional fields added after v1 first shipped.
+  if (!Array.isArray(store.installments)) store.installments = [];
+  return store;
 }
 
 export function saveStore(store: Store): void {

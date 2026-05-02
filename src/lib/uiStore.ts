@@ -1,6 +1,12 @@
 import { writable } from 'svelte/store';
 
-export type TransactionModalKind = 'expense' | 'income' | 'fx' | 'salary' | null;
+export type TransactionModalKind =
+  | 'expense'
+  | 'income'
+  | 'fx'
+  | 'salary'
+  | 'installment'
+  | null;
 
 export const transactionModal = writable<TransactionModalKind>(null);
 

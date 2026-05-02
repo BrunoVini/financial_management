@@ -94,6 +94,22 @@ export interface Snapshot {
   takenAt: string;
 }
 
+export interface InstallmentPlan {
+  id: string;
+  description: string;
+  totalAmount: number;
+  installmentCount: number;
+  currency: Currency;
+  accountId: string;
+  categoryId: string;
+  firstMonthKey: MonthKey;
+  createdAt: string;
+  // 0-based indices of installments already paid. Each pay action also
+  // creates a real Expense in the corresponding month — `paidIndices`
+  // here is just the bookkeeping needed to know what's left.
+  paidIndices: number[];
+}
+
 export interface Settings {
   language: Language;
   theme: ThemeName;
@@ -118,5 +134,6 @@ export interface Store {
   accounts: Account[];
   months: Record<MonthKey, Month>;
   investments: { holdings: Holding[]; contributions: Contribution[]; snapshots: Snapshot[] };
+  installments: InstallmentPlan[];
   ratesCache: RatesCache | null;
 }
