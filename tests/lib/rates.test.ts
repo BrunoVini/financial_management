@@ -38,7 +38,7 @@ describe('rates', () => {
     // Then: rates are returned, the cache is populated, and exactly one network call was made
     expect(result.rates.BRL).toBe(5.5);
     expect(loadStore().ratesCache?.fetchedAt).toBe(todayIso());
-    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
   });
 
   it('skips network when cache fetchedAt is today', async () => {
@@ -51,7 +51,7 @@ describe('rates', () => {
     await ensureRates(['BRL']);
 
     // Then: no fetch happens — cached rates serve the request
-    expect(global.fetch).not.toHaveBeenCalled();
+    expect(globalThis.fetch).not.toHaveBeenCalled();
   });
 
   it('refetches when cache is from a previous day', async () => {
@@ -64,7 +64,7 @@ describe('rates', () => {
     await ensureRates(['BRL', 'USD', 'CAD']);
 
     // Then: a fresh fetch is triggered
-    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1);
   });
 
   it('falls back to stale cache on fetch error', async () => {
@@ -95,7 +95,7 @@ describe('rates', () => {
     await ensureRates(['BRL', 'USD']);
 
     // Then: the URL contains base=EUR and the comma-joined symbols
-    expect(global.fetch).toHaveBeenCalledWith(
+    expect(globalThis.fetch).toHaveBeenCalledWith(
       expect.stringContaining(`${FRANKFURTER_URL}?from=EUR&to=BRL,USD`),
     );
   });
