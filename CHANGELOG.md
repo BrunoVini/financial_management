@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.gitignore` entries for `.superpowers/` (brainstorm assets) and `.claude/` (local IDE state).
 - Project `README.md` with status, dev / test / build / deploy instructions, and conventions.
 - Pinned `@rolldown/binding-linux-x64-gnu` so fresh clones get the native binding.
+- Vitest setup file (`tests/setup.ts`) loading `@testing-library/jest-dom/vitest` matchers and clearing `localStorage` before/after each test.
 
 ### Changed
 
