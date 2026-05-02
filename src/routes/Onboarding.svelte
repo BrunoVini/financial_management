@@ -6,6 +6,7 @@
   import { detectLocale } from '@/i18n';
   import Step1Language from './onboarding/Step1Language.svelte';
   import Step2Salary from './onboarding/Step2Salary.svelte';
+  import Step3Balances from './onboarding/Step3Balances.svelte';
 
   onMount(() => {
     const lang = detectLocale(navigator.language || 'pt-BR');
@@ -44,6 +45,8 @@
       <Step1Language />
     {:else if $wizard.step === 2}
       <Step2Salary />
+    {:else if $wizard.step === 3}
+      <Step3Balances />
     {:else}
       <p>Step {$wizard.step} — coming up.</p>
     {/if}
