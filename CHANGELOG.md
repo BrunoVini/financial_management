@@ -113,7 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed (Phase 3 polish)
 
 - `R$ NaN` artifact on Overview pills right after onboarding: `App.svelte` `onMount` early-returned when `settings.onboarded === false` and never came back to fetch rates, leaving `ratesCache === null` and forcing `convert()` to return `NaN`. A `$effect` now reruns the boot (rollover + rates fetch) the moment `settings.onboarded` flips to `true`, guarded by a `booted` flag to avoid re-fetching on subsequent setting changes.
-- `BalancePill` defensively skips the converted line when `convertedAmount` is not a finite number (e.g. while the daily rates request is still in flight).
+- `BalancePill` shows the converted line whenever `convertedAmount` is provided. The "skip while loading" guard moved up to `NetWorthCard.safeConvert(...)` which returns `undefined` until the rates cache exists — once rates arrive (≤1s typical) the converted line appears with the real value.
 
 ### Changed
 

@@ -34,6 +34,13 @@
     }
     return sum;
   });
+
+  function safeConvert(amt: number, from: Currency): number | undefined {
+    const rates = $appStore.ratesCache?.rates;
+    if (!rates) return undefined;
+    const v = convert(amt, from, $settings.displayCurrency, rates);
+    return Number.isFinite(v) ? v : undefined;
+  }
 </script>
 
 <Card padding="lg" variant="glass">
@@ -46,7 +53,7 @@
       <BalancePill
         amount={amt}
         currency={curr}
-        convertedAmount={convert(amt, curr, $settings.displayCurrency, $appStore.ratesCache?.rates ?? {})}
+        convertedAmount={safeConvert(amt, curr)}
         convertedCurrency={$settings.displayCurrency}
         language={$settings.language}
       />
