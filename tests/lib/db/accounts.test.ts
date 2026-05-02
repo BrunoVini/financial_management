@@ -7,6 +7,13 @@ import {
   accountBalance,
 } from '@/lib/db/accounts';
 import { defaultStore } from '@/lib/storage';
+import { createMonth } from '@/lib/db/months';
+import {
+  addExpense,
+  addIncome,
+  addFxTransfer,
+  setSalaryReceived,
+} from '@/lib/db/transactions';
 
 describe('addAccount', () => {
   it('appends a new account with a generated id', () => {
@@ -53,15 +60,14 @@ describe('listAccountsByCurrency', () => {
 });
 
 describe('accountBalance', () => {
-  it('equals opening balance when no transactions exist (Phase 2)', () => {
+  it('equals opening balance when no transactions exist', () => {
     // Given: a single account with opening balance
     const s0 = defaultStore();
     const s1 = addAccount(s0, { name: 'A', currency: 'BRL', openingBalance: 1234.5 });
     const id = s1.accounts[0].id;
-    // When: querying balance for the current month
-    const balance = accountBalance(s1, id, '2026-05');
+    // When: querying balance for any month
     // Then: it matches the opening balance
-    expect(balance).toBe(1234.5);
+    expect(accountBalance(s1, id, '2026-05')).toBe(1234.5);
   });
 
   it('returns 0 for unknown account', () => {
@@ -69,5 +75,85 @@ describe('accountBalance', () => {
     const s = defaultStore();
     // When/Then: querying a nonexistent id
     expect(accountBalance(s, 'nope', '2026-05')).toBe(0);
+  });
+
+  it('subtracts expenses tied to the account', () => {
+    // Given: a BRL account with opening 1000 and a 200 expense in May
+    let s = addAccount(defaultStore(), { name: 'BRL', currency: 'BRL', openingBalance: 1000 });
+    const id = s.accounts[0].id;
+    s = createMonth(s, '2026-05', { BRL: 1000 });
+    s = addExpense(s, '2026-05', {
+      amount: 200,
+      currency: 'BRL',
+      categoryId: 'food',
+      accountId: id,
+      date: '2026-05-10',
+    }).store;
+    // When/Then: balance after May reflects the expense
+    expect(accountBalance(s, id, '2026-05')).toBe(800);
+  });
+
+  it('adds extra incomes in matching currency', () => {
+    // Given: a BRL account opening 0 and a 500 BRL extra income in May
+    let s = addAccount(defaultStore(), { name: 'BRL', currency: 'BRL', openingBalance: 0 });
+    const id = s.accounts[0].id;
+    s = createMonth(s, '2026-05', { BRL: 0 });
+    s = addIncome(s, '2026-05', { amount: 500, currency: 'BRL', date: '2026-05-15' }).store;
+    // When/Then: balance reflects the income
+    expect(accountBalance(s, id, '2026-05')).toBe(500);
+  });
+
+  it('adds salary in matching currency', () => {
+    // Given: USD account opening 0 with a USD salary of 4000 received in May
+    let s = addAccount(defaultStore(), { name: 'USD', currency: 'USD', openingBalance: 0 });
+    const id = s.accounts[0].id;
+    s = createMonth(s, '2026-05', { USD: 0 });
+    s = setSalaryReceived(s, '2026-05', {
+      amount: 4000,
+      currency: 'USD',
+      rateToDisplay: 5.4,
+      receivedAt: '2026-05-05',
+    });
+    // When/Then: USD account balance reflects the salary
+    expect(accountBalance(s, id, '2026-05')).toBe(4000);
+  });
+
+  it('handles fx transfers in both directions', () => {
+    // Given: USD and BRL accounts; a fx transfer 100 USD -> 540 BRL in May
+    let s = defaultStore();
+    s = addAccount(s, { name: 'USD', currency: 'USD', openingBalance: 1000 });
+    s = addAccount(s, { name: 'BRL', currency: 'BRL', openingBalance: 0 });
+    const usdId = s.accounts[0].id;
+    const brlId = s.accounts[1].id;
+    s = createMonth(s, '2026-05', { USD: 1000, BRL: 0 });
+    s = addFxTransfer(s, '2026-05', {
+      fromCurrency: 'USD',
+      toCurrency: 'BRL',
+      fromAmount: 100,
+      toAmount: 540,
+      rate: 5.4,
+      date: '2026-05-12',
+    }).store;
+    // When/Then: USD drops by 100, BRL rises by 540
+    expect(accountBalance(s, usdId, '2026-05')).toBe(900);
+    expect(accountBalance(s, brlId, '2026-05')).toBe(540);
+  });
+
+  it('only counts months up to and including monthKey', () => {
+    // Given: a BRL account with an expense in June
+    let s = addAccount(defaultStore(), { name: 'BRL', currency: 'BRL', openingBalance: 1000 });
+    const id = s.accounts[0].id;
+    s = createMonth(s, '2026-05', { BRL: 1000 });
+    s = createMonth(s, '2026-06', { BRL: 1000 });
+    s = addExpense(s, '2026-06', {
+      amount: 200,
+      currency: 'BRL',
+      categoryId: 'c',
+      accountId: id,
+      date: '2026-06-10',
+    }).store;
+    // When/Then: querying May, expense is excluded; querying June, it's included
+    expect(accountBalance(s, id, '2026-05')).toBe(1000);
+    expect(accountBalance(s, id, '2026-06')).toBe(800);
   });
 });

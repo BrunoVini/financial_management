@@ -83,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added (Phase 3)
 
 - Transactions DB module (`src/lib/db/transactions.ts`): `addExpense / addIncome / addFxTransfer` (each return `{ store, id }`), `removeExpense / removeIncome / removeFxTransfer`, `setSalaryReceived` (accepts `null` to clear), `monthExpenseTotalsByCategory`, `monthExpenseTotal`, `monthIncomeTotal`. Income totals use the salary's locked `rateToDisplay` so historical numbers stay stable; extras use live rates. 9 G/W/T tests cover each function plus mixed-currency aggregation.
+- `accountBalance(store, id, monthKey)` now folds transactions in: starts from `openingBalance`, then for every month ≤ `monthKey` adds incoming amounts (extra incomes / salary / fx-transfer destinations matching the account currency) and subtracts outgoing amounts (expenses tied to the account; fx-transfer sources). 5 new G/W/T tests cover each path plus the month cutoff.
 
 ### Changed
 
