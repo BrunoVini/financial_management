@@ -3,6 +3,7 @@
   import Card from '@/components/Card.svelte';
   import ActivityList from '@/components/ActivityList.svelte';
   import NetWorthCard from './overview/NetWorthCard.svelte';
+  import NetWorthHistoryCard from './overview/NetWorthHistoryCard.svelte';
   import MonthSummaryCard from './overview/MonthSummaryCard.svelte';
   import SalaryCard from './overview/SalaryCard.svelte';
   import InvestedCard from './overview/InvestedCard.svelte';
@@ -21,6 +22,8 @@
   <h1>{$t('nav.overview')}</h1>
 
   <NetWorthCard />
+
+  <NetWorthHistoryCard />
 
   <div class="grid">
     <MonthSummaryCard />
