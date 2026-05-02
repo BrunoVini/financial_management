@@ -82,6 +82,13 @@ export const ptBr = {
   'tx.fx.rate': 'Taxa',
   'tx.salary.received': 'Recebido em',
   'tx.salary.rate': 'Cotação no recebimento',
+  'tx.salary.rate.help':
+    'Apenas para registro histórico. O salário fica em sua moeda nativa — a conversão é só pra exibição em relatórios.',
+  'tx.fab.label': 'Novo lançamento',
+  'tx.fab.expense': 'Gasto',
+  'tx.fab.income': 'Receita extra',
+  'tx.fab.fx': 'Câmbio',
+  'tx.fab.salary': 'Salário recebido',
   'tx.add': 'Adicionar',
   'overview.networth': 'Patrimônio',
   'overview.spent': 'Gastos do mês',

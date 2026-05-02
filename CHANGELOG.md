@@ -101,6 +101,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Activity feed (last 10 entries) and a circular FAB that opens `ExpenseModal`.
 - `Months.svelte` — vertical timeline (newest first) of every existing month with a status badge (Aberto/Graça/Fechado) and the per-month income / spent / balance in the display currency. Empty state when only the current month exists.
 - `MonthDetail.svelte` (+ `monthDetail/MonthHeader.svelte`) — header with status badge and "closed month" banner that unlocks editing on demand; activity list with delete (disabled while locked); 4 dashed "+" buttons that open the matching transaction modals.
+- `QuickAddFab.svelte` — expanding floating action button on Overview that lets the user pick between **Expense / Extra income / FX exchange / Salary received** instead of only the expense modal. Salary entry hides when `salaryAmount === 0`.
+
+### Changed (Phase 3 polish)
+
+- Salary modal now shows a hint making the rate's purpose explicit: "Historical record only. The salary stays in its native currency — this rate is just used to display reports." The salary balance never auto-converts; it always lands in the native-currency account.
+- `SalaryCard` received state now reads "creditado em {CURRENCY}" instead of showing the rate, so the native-currency posting is unambiguous.
+- Browser tab title fixed: was the leftover `temp-app` from the Vite scaffold, now shows `Financial Management`. Set `<html lang="pt-BR">`, added `theme-color` and `description` meta tags.
+- Custom favicon (gradient roxo→rosa with a wallet outline) replacing the default Svelte template icon.
 
 ### Changed
 

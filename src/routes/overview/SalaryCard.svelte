@@ -18,8 +18,7 @@
         {formatMoney(received.amount, received.currency, $settings.language)}
       </p>
       <p class="meta">
-        {received.receivedAt.slice(0, 10)} · {$t('tx.salary.rate')}
-        {received.rateToDisplay.toFixed(4)}
+        {received.receivedAt.slice(0, 10)} · creditado em {received.currency}
       </p>
     {:else}
       <p class="value">

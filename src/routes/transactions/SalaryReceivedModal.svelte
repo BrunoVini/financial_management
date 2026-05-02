@@ -97,6 +97,7 @@
         oninput={(e) => (rate = Number((e.target as HTMLInputElement).value))}
         disabled={currency === $settings.displayCurrency}
       />
+      <small class="hint">{$t('tx.salary.rate.help')}</small>
     </label>
 
     {#if error}<p class="error" role="alert">{error}</p>{/if}
@@ -130,6 +131,12 @@
     padding: var(--space-2) var(--space-3);
     font: inherit;
     min-height: 36px;
+  }
+  .hint {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    line-height: 1.4;
+    margin-top: 2px;
   }
   .error {
     color: var(--negative);

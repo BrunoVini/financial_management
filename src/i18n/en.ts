@@ -82,6 +82,13 @@ export const en = {
   'tx.fx.rate': 'Rate',
   'tx.salary.received': 'Received on',
   'tx.salary.rate': 'Rate at receipt',
+  'tx.salary.rate.help':
+    'Historical record only. The salary stays in its native currency — this rate is just used to display reports.',
+  'tx.fab.label': 'New entry',
+  'tx.fab.expense': 'Expense',
+  'tx.fab.income': 'Extra income',
+  'tx.fab.fx': 'FX exchange',
+  'tx.fab.salary': 'Salary received',
   'tx.add': 'Add',
   'overview.networth': 'Net worth',
   'overview.spent': 'Spent this month',

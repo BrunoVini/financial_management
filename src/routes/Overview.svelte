@@ -9,8 +9,7 @@
   import { appStore, settings } from '@/lib/appStore';
   import { monthKey as toMonthKey } from '@/lib/db/months';
   import { monthActivity } from '@/lib/activity';
-  import { openTransactionModal } from '@/lib/uiStore';
-  import { Plus } from 'lucide-svelte';
+  import QuickAddFab from '@/components/QuickAddFab.svelte';
 
   const currentKey = $derived(toMonthKey(new Date()));
   let month = $derived($appStore.months[currentKey]);
@@ -33,14 +32,7 @@
   </Card>
 </section>
 
-<button
-  type="button"
-  class="fab"
-  aria-label={$t('overview.fab.label')}
-  onclick={() => openTransactionModal('expense')}
->
-  <Plus size={24} />
-</button>
+<QuickAddFab />
 
 <style>
   .page {
@@ -62,28 +54,6 @@
   @media (max-width: 700px) {
     .grid {
       grid-template-columns: 1fr;
-    }
-  }
-  .fab {
-    position: fixed;
-    bottom: 96px;
-    right: var(--space-4);
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--accent-gradient);
-    color: white;
-    border: none;
-    box-shadow: var(--shadow-glow), var(--shadow-glass);
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 20;
-  }
-  @media (min-width: 769px) {
-    .fab {
-      bottom: var(--space-5);
     }
   }
 </style>
