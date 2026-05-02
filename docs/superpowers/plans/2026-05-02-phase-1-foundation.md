@@ -161,41 +161,58 @@ git commit -m "chore: scaffold Vite + Svelte + TypeScript project"
 ## Task 2: ESLint, Prettier, max-lines Rule
 
 **Files:**
-- Create: `.eslintrc.cjs`, `.eslintignore`, `.prettierrc`, `.prettierignore`
+- Create: `eslint.config.js`, `.prettierrc`, `.prettierignore`, `.editorconfig`
 
-- [ ] **Step 1: Write `.eslintrc.cjs`**
+> ESLint v9+ uses **flat config** (`eslint.config.js`) — the legacy `.eslintrc.cjs` / `.eslintignore` formats are no longer supported. Install `globals` as a dev dependency for browser/node globals.
+
+- [ ] **Step 1: Write `eslint.config.js`**
 
 ```js
-module.exports = {
-  root: true,
-  parser: '@typescript-eslint/parser',
-  parserOptions: { ecmaVersion: 2022, sourceType: 'module', extraFileExtensions: ['.svelte'] },
-  plugins: ['@typescript-eslint'],
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
-  env: { browser: true, es2022: true, node: true },
-  rules: {
-    'max-lines': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-  },
-  overrides: [
-    {
-      files: ['*.svelte'],
-      parser: 'svelte-eslint-parser',
-      parserOptions: { parser: '@typescript-eslint/parser' },
-      extends: ['plugin:svelte/recommended'],
-    },
-    { files: ['tests/**/*.ts', '**/*.test.ts'], rules: { 'max-lines': 'off' } },
-  ],
+import js from '@eslint/js';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import sveltePlugin from 'eslint-plugin-svelte';
+import svelteParser from 'svelte-eslint-parser';
+import globals from 'globals';
+
+const baseRules = {
+  ...js.configs.recommended.rules,
+  ...tseslint.configs.recommended.rules,
+  'max-lines': ['error', { max: 200, skipBlankLines: true, skipComments: true }],
+  '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
 };
+
+export default [
+  { ignores: ['dist/**', 'node_modules/**', '.svelte-kit/**', '.superpowers/**'] },
+  {
+    files: ['**/*.{ts,js,cjs,mjs}'],
+    languageOptions: {
+      parser: tsParser,
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: { ...globals.browser, ...globals.node, ...globals.es2022 },
+    },
+    plugins: { '@typescript-eslint': tseslint },
+    rules: baseRules,
+  },
+  {
+    files: ['**/*.svelte'],
+    languageOptions: {
+      parser: svelteParser,
+      parserOptions: { parser: tsParser, extraFileExtensions: ['.svelte'] },
+      globals: { ...globals.browser, ...globals.node, ...globals.es2022 },
+    },
+    plugins: { '@typescript-eslint': tseslint, svelte: sveltePlugin },
+    rules: { ...baseRules, ...(sveltePlugin.configs?.recommended?.rules ?? {}) },
+  },
+  { files: ['tests/**/*.ts', '**/*.test.ts'], rules: { 'max-lines': 'off' } },
+];
 ```
 
-- [ ] **Step 2: Write `.eslintignore`**
+- [ ] **Step 2: Install `globals` as a dev dependency**
 
-```
-dist
-node_modules
-.svelte-kit
-.superpowers
+```bash
+npm install -D globals
 ```
 
 - [ ] **Step 3: Write `.prettierrc`**
@@ -222,18 +239,35 @@ docs/superpowers/specs
 docs/superpowers/plans
 ```
 
-- [ ] **Step 5: Run lint to verify config**
+- [ ] **Step 5: Write `.editorconfig`**
+
+```ini
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
+```
+
+- [ ] **Step 6: Run lint to verify config**
 
 ```bash
 npm run lint
 ```
 Expected: PASS (or only style warnings on the placeholder App.svelte). Fix any errors.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add -A
-git commit -m "chore: configure ESLint, Prettier, and max-lines rule"
+git commit -m "chore: configure ESLint, Prettier, EditorConfig, and max-lines rule"
 ```
 
 ---
