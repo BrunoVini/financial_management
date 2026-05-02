@@ -7,6 +7,7 @@
   import PendingInstallments from './monthDetail/PendingInstallments.svelte';
   import ExpensesDonut from './monthDetail/ExpensesDonut.svelte';
   import BudgetProgress from './monthDetail/BudgetProgress.svelte';
+  import ActivitySearch from './monthDetail/ActivitySearch.svelte';
   import { appStore, mutate, settings } from '@/lib/appStore';
   import { monthActivity } from '@/lib/activity';
   import {
@@ -32,7 +33,22 @@
   let unlocked = $state(false);
   let locked = $derived(!!month && month.status === 'closed' && !unlocked);
 
-  let entries = $derived(month ? monthActivity($appStore, month) : []);
+  let allEntries = $derived(month ? monthActivity($appStore, month) : []);
+  let searchQuery = $state('');
+  let searchCategoryId = $state('');
+
+  let entries = $derived.by(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return allEntries.filter((entry) => {
+      if (q && !entry.label.toLowerCase().includes(q)) return false;
+      if (searchCategoryId && entry.kind === 'expense') {
+        // entry.id is the expense id; cross-reference against month.expenses
+        const expense = month?.expenses.find((e) => e.id === entry.id);
+        if (expense?.categoryId !== searchCategoryId) return false;
+      }
+      return true;
+    });
+  });
 
   function deleteEntry(entry: ActivityEntry) {
     if (locked) return;
@@ -63,6 +79,7 @@
     <ExpensesDonut monthKey={key} />
 
     <Card title={$t('overview.activity')}>
+      <ActivitySearch bind:query={searchQuery} bind:categoryId={searchCategoryId} />
       <ActivityList
         {entries}
         language={$settings.language}

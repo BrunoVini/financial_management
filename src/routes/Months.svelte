@@ -5,11 +5,16 @@
   import { appStore, settings } from '@/lib/appStore';
   import { formatMoney } from '@/lib/money';
   import { monthExpenseTotal, monthIncomeTotal } from '@/lib/db/transactions';
+  import StatusFilter from '@/components/StatusFilter.svelte';
   import type { MonthStatus } from '@/lib/types';
 
-  let entries = $derived(
-    Object.values($appStore.months).sort((a, b) => b.key.localeCompare(a.key)),
-  );
+  let filter = $state<MonthStatus | 'all'>('all');
+
+  let entries = $derived.by(() => {
+    const all = Object.values($appStore.months).sort((a, b) => b.key.localeCompare(a.key));
+    if (filter === 'all') return all;
+    return all.filter((m) => m.status === filter);
+  });
 
   function statusLabel(status: MonthStatus): string {
     if (status === 'open') return 'Aberto';
@@ -39,7 +44,9 @@
 <section class="page">
   <h1>{$t('nav.months')}</h1>
 
-  {#if entries.length <= 1}
+  <StatusFilter bind:value={filter} />
+
+  {#if entries.length === 0}
     <Card padding="md">
       <p class="empty">{$t('months.empty')}</p>
     </Card>
