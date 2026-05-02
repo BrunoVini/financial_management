@@ -56,6 +56,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Card.svelte` glass primitive: optional `title`, optional `actions` snippet, configurable `variant` (`glass` / `raised`) and `padding` (`sm` / `md` / `lg`). Uses Svelte 5 runes + Snippet props. Body renders via `children` snippet.
 - `CurrencyPicker.svelte`: bindable `value` + `options[]` array, `aria-label`, `onchange` callback. Uses native `<select>` for accessibility.
 - `MoneyInput.svelte`: numeric input glued to a `CurrencyPicker`. Bindable `value` (number) and `currency`. `inputmode="decimal"` opens numeric keyboard on mobile. Parses both `1.234,56` (pt-BR) and `1234.56` (en) formats.
+- Onboarding wizard scaffold:
+  - `src/routes/onboarding/state.ts` — shared writable `wizard` store with the full multi-step state, `defaultWizardState(language)` factory, `SUPPORTED_CURRENCIES = ['BRL','USD','CAD','EUR']`.
+  - `src/routes/onboarding/Step1Language.svelte` — language radio (pt-BR / en), display currency picker, multi-select active currencies (display currency is auto-checked and locked, removing currencies syncs `openingBalances`).
+  - `src/routes/Onboarding.svelte` — stepper UI with progress dots, Back/Next/Finish buttons, gradient title, fits 720px max width.
+  - i18n keys `onboarding.*` added to both PT-BR and EN dictionaries.
+- App boot guard in `App.svelte`: on mount, redirects to `/onboarding` when `settings.onboarded === false`. Sidebar and BottomNav hide on the onboarding route for a focused wizard experience.
 
 ### Changed
 
