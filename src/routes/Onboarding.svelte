@@ -1,13 +1,15 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
   import { push } from 'svelte-spa-router';
-  import { t } from '@/i18n';
+  import { t, detectLocale } from '@/i18n';
   import { wizard, defaultWizardState } from './onboarding/state';
-  import { detectLocale } from '@/i18n';
   import Step1Language from './onboarding/Step1Language.svelte';
   import Step2Salary from './onboarding/Step2Salary.svelte';
   import Step3Balances from './onboarding/Step3Balances.svelte';
   import Step4Holdings from './onboarding/Step4Holdings.svelte';
+  import { mutate } from '@/lib/appStore';
+  import { applyWizard } from './onboarding/finish';
 
   onMount(() => {
     const lang = detectLocale(navigator.language || 'pt-BR');
@@ -21,8 +23,10 @@
     wizard.update((w) => ({ ...w, step: Math.max(1, (w.step - 1) as 1 | 2 | 3 | 4) }));
   }
 
-  // Phase 2 milestone: Steps 2-4 + finish handler land in P2.11..P2.14.
-  function finishPlaceholder() {
+  function finish() {
+    const w = get(wizard);
+    const today = new Date();
+    mutate((store) => applyWizard(store, w, today));
     push('/');
   }
 </script>
@@ -62,7 +66,7 @@
         {$t('onboarding.next')}
       </button>
     {:else}
-      <button type="button" class="primary" onclick={finishPlaceholder}>
+      <button type="button" class="primary" onclick={finish}>
         {$t('onboarding.finish')}
       </button>
     {/if}

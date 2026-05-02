@@ -62,6 +62,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `src/routes/Onboarding.svelte` — stepper UI with progress dots, Back/Next/Finish buttons, gradient title, fits 720px max width.
   - i18n keys `onboarding.*` added to both PT-BR and EN dictionaries.
 - App boot guard in `App.svelte`: on mount, redirects to `/onboarding` when `settings.onboarded === false`. Sidebar and BottomNav hide on the onboarding route for a focused wizard experience.
+- Onboarding Step 2 (`Step2Salary.svelte`): yes/no toggle for fixed salary, MoneyInput limited to active currencies, day-of-month picker (1-31, clamped).
+- Onboarding Step 3 (`Step3Balances.svelte`): one row per active currency, decimal-keyboard input, parses both pt-BR and en numeric formats.
+- Onboarding Step 4 (`Step4Holdings.svelte`): optional list of up to 10 holdings with name + type (from default investment categories) + value via MoneyInput; trash button per row, dashed +Add button.
+- Onboarding completion (`src/routes/onboarding/finish.ts`): `applyWizard(store, wizardState, today)` pure function that persists settings, seeds default categories in the chosen language, creates one account per active currency, opens the current month with the entered balances, and seeds holdings + a starting snapshot per holding (skips blank-named entries). 5 G/W/T tests cover each effect.
 
 ### Changed
 
