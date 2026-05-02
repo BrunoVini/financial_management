@@ -20,6 +20,8 @@ export function defaultStore(): Store {
     months: {},
     investments: { holdings: [], contributions: [], snapshots: [] },
     installments: [],
+    subscriptions: [],
+    budgets: {},
     ratesCache: null,
   };
 }
@@ -39,6 +41,8 @@ export function loadStore(): Store {
   }
   // Soft migration: backfill optional fields added after v1 first shipped.
   if (!Array.isArray(store.installments)) store.installments = [];
+  if (!Array.isArray(store.subscriptions)) store.subscriptions = [];
+  if (!store.budgets || typeof store.budgets !== 'object') store.budgets = {};
   return store;
 }
 

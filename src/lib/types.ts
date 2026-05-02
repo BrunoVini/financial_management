@@ -94,6 +94,19 @@ export interface Snapshot {
   takenAt: string;
 }
 
+export interface Subscription {
+  id: string;
+  description: string;
+  amount: number;
+  currency: Currency;
+  categoryId: string;
+  accountId: string;
+  dayOfMonth: number; // 1-31, clamped to month length on apply
+  active: boolean;
+  createdAt: string;
+  appliedMonths: MonthKey[];
+}
+
 export interface InstallmentPlan {
   id: string;
   description: string;
@@ -135,5 +148,7 @@ export interface Store {
   months: Record<MonthKey, Month>;
   investments: { holdings: Holding[]; contributions: Contribution[]; snapshots: Snapshot[] };
   installments: InstallmentPlan[];
+  subscriptions: Subscription[];
+  budgets: Record<string, number>;
   ratesCache: RatesCache | null;
 }
