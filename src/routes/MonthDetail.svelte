@@ -6,6 +6,7 @@
   import MonthHeader from './monthDetail/MonthHeader.svelte';
   import PendingInstallments from './monthDetail/PendingInstallments.svelte';
   import ExpensesDonut from './monthDetail/ExpensesDonut.svelte';
+  import BudgetProgress from './monthDetail/BudgetProgress.svelte';
   import { appStore, mutate, settings } from '@/lib/appStore';
   import { monthActivity } from '@/lib/activity';
   import {
@@ -56,6 +57,8 @@
     <MonthHeader {month} {locked} onUnlock={() => (unlocked = true)} />
 
     <PendingInstallments monthKey={key} {locked} />
+
+    <BudgetProgress monthKey={key} />
 
     <ExpensesDonut monthKey={key} />
 

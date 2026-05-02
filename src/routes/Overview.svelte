@@ -8,6 +8,7 @@
   import SalaryCard from './overview/SalaryCard.svelte';
   import InvestedCard from './overview/InvestedCard.svelte';
   import DebtCard from './overview/DebtCard.svelte';
+  import BudgetSummaryCard from './overview/BudgetSummaryCard.svelte';
   import { appStore, settings } from '@/lib/appStore';
   import { monthKey as toMonthKey } from '@/lib/db/months';
   import { monthActivity } from '@/lib/activity';
@@ -30,6 +31,8 @@
     <SalaryCard />
     <InvestedCard />
   </div>
+
+  <BudgetSummaryCard />
 
   <DebtCard />
 
