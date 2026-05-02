@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Silenced TypeScript 7 `baseUrl` deprecation warning via `ignoreDeprecations: "6.0"` in `tsconfig.app.json`.
 - UUID helper (`src/lib/uuid.ts`): `newId()` thin wrapper around `crypto.randomUUID()` so tests of consumers can stub the call site without monkey-patching `crypto`.
 - Categories DB module (`src/lib/db/categories.ts`): seeds (8 expense + 5 investment per language), `addCategory`, `updateCategory`, `archive/unarchiveCategory`, `removeCategory` — all pure `Store → Store` functions. Color palette rotates over 8 hex tones.
+- Accounts DB module (`src/lib/db/accounts.ts`): `addAccount`, `removeAccount`, `getAccount`, `listAccountsByCurrency`, and `accountBalance(store, id, monthKey)` — Phase 2 returns the opening balance directly; Phase 3 will fold transactions into the calculation.
 
 ### Changed
 
