@@ -21,6 +21,7 @@
   import FxTransferModal from '@/routes/transactions/FxTransferModal.svelte';
   import SalaryReceivedModal from '@/routes/transactions/SalaryReceivedModal.svelte';
   import InstallmentModal from '@/routes/installments/InstallmentModal.svelte';
+  import CommandPalette from '@/components/CommandPalette.svelte';
 
   let ratesStale = $state(false);
 
@@ -99,6 +100,7 @@
 <FxTransferModal open={$transactionModal === 'fx'} onclose={closeTransactionModal} />
 <SalaryReceivedModal open={$transactionModal === 'salary'} onclose={closeTransactionModal} />
 <InstallmentModal open={$transactionModal === 'installment'} onclose={closeTransactionModal} />
+<CommandPalette />
 
 <style>
   .layout {
