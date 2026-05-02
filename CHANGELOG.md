@@ -51,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Categories DB module (`src/lib/db/categories.ts`): seeds (8 expense + 5 investment per language), `addCategory`, `updateCategory`, `archive/unarchiveCategory`, `removeCategory` — all pure `Store → Store` functions. Color palette rotates over 8 hex tones.
 - Accounts DB module (`src/lib/db/accounts.ts`): `addAccount`, `removeAccount`, `getAccount`, `listAccountsByCurrency`, and `accountBalance(store, id, monthKey)` — Phase 2 returns the opening balance directly; Phase 3 will fold transactions into the calculation.
 - Months DB module (`src/lib/db/months.ts`): `monthKey`, `nextMonthKey`, `createMonth`, `getOrCreateCurrentMonth`, `closeMonth`, and `rolloverIfNeeded(store, today)` — handles `open → grace → closed` transitions, inherits `closingBalances → openingBalances` across months, fills intermediate months when multiple periods passed, and sweeps elapsed grace deadlines into `closed`. `GRACE_DAYS = 7` matches the spec.
+- Investments DB module (`src/lib/db/investments.ts`): `addHolding`, `removeHolding` (cascades to contributions + snapshots), `addContribution`, `addSnapshot`, and `holdingReturn(store, holdingId)` returning `{ contributed, marketValue, deltaAbsolute, deltaPercent }` based on summed contributions and the latest snapshot.
 
 ### Changed
 
