@@ -30,6 +30,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `dark.ts` / `light.ts` — palettes (background, border, text, accent gradient, semantic colors, currency-specific pills, shadows). Dark palette is the default.
   - `index.ts` — `theme` Svelte store, `setTheme(name)`, `applyThemeToDocument(palette)` (writes CSS custom properties to `<html>` and sets `data-theme`), plus the `Palette` interface.
 - Global stylesheet (`src/app.css`): CSS custom properties matching the dark palette (the active theme later overwrites them via `applyThemeToDocument`), reset of box-sizing, base body styles, and a `prefers-reduced-motion` media query that disables transitions/animations.
+- i18n module (`src/i18n/`):
+  - `pt-br.ts` / `en.ts` — translation dictionaries (initial keys: `nav.*`, `app.*`).
+  - `index.ts` — `locale` writable store (default `pt-BR`), `setLocale(name)`, `t` derived store returning a `(key) => string` resolver that falls back to the key when a translation is missing, and `detectLocale(navLanguage)` heuristic (anything starting with `pt` → `pt-BR`, else `en`).
 
 ### Changed
 
