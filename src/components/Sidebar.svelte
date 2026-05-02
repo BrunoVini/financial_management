@@ -1,7 +1,7 @@
 <script lang="ts">
   import { LayoutDashboard, Calendar, TrendingUp, Settings as Cog } from 'lucide-svelte';
   import { t } from '@/i18n';
-  import { link, location } from 'svelte-spa-router';
+  import { link, router } from 'svelte-spa-router';
 
   const items = [
     { href: '/', icon: LayoutDashboard, key: 'nav.overview' },
@@ -19,7 +19,7 @@
   <nav>
     {#each items as item (item.href)}
       {@const Icon = item.icon}
-      <a href={item.href} use:link class:active={isActive(item.href, $location)}>
+      <a href={item.href} use:link class:active={isActive(item.href, router.location)}>
         <Icon size={18} />
         <span>{$t(item.key)}</span>
       </a>

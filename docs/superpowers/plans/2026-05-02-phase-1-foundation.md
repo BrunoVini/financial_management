@@ -16,6 +16,7 @@
 - **Tests use Given / When / Then comments** to label arrange, act, assert. See `tests/lib/storage.test.ts` for the canonical style. Apply this to every test in this plan even where the code blocks below don't show the comments.
 - **Path alias `@` maps to `src/`.** Use `import x from '@/lib/...'` instead of relative `../src/...` paths in tests and cross-folder imports. Configured in `tsconfig.app.json` (`paths`) and `vite.config.ts` (`resolve.alias`). Sibling imports in the same folder still use `./`.
 - **Tests mirror the `src/` folder structure.** A test for `src/lib/storage.ts` lives at `tests/lib/storage.test.ts`. A test for `src/theme/index.ts` lives at `tests/theme/index.test.ts`. Only `tests/setup.ts` (global Vitest setup) sits at the `tests/` root.
+- **`svelte-spa-router` v5 API.** The package exports `link` (action) and `router` (a Svelte 5 runes-based reactive object). Older code using `import { location, params } from 'svelte-spa-router'` does not work — read `router.location` and `router.params` directly inside markup. Components stay reactive via runes. Use the App shell with `<Router {routes} />` and Svelte 5's `$effect(() => applyThemeToDocument($theme))` instead of `onMount` + `$:`.
 
 ---
 

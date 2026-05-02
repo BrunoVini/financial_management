@@ -1,9 +1,17 @@
 <script lang="ts">
-  import { params } from 'svelte-spa-router';
+  import { router } from 'svelte-spa-router';
+
+  function readKey(): string {
+    const params = router.params;
+    if (params && !Array.isArray(params) && 'key' in params) {
+      return (params as Record<string, string>).key ?? '';
+    }
+    return '';
+  }
 </script>
 
 <section>
-  <h1>Month {$params?.key ?? ''}</h1>
+  <h1>Month {readKey()}</h1>
   <p>Coming in Phase 2.</p>
 </section>
 
