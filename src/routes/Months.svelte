@@ -4,7 +4,7 @@
 
 <section>
   <h1>{$t('nav.months')}</h1>
-  <p>Coming in Phase 2.</p>
+  <p>Coming in Phase 3.</p>
 </section>
 
 <style>

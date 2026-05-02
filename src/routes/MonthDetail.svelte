@@ -12,7 +12,7 @@
 
 <section>
   <h1>Month {readKey()}</h1>
-  <p>Coming in Phase 2.</p>
+  <p>Coming in Phase 3.</p>
 </section>
 
 <style>
