@@ -2,7 +2,8 @@
   import { t } from '@/i18n';
   import Card from '@/components/Card.svelte';
   import MoneyInput from '@/components/MoneyInput.svelte';
-  import { wizard } from './state';
+  import { wizard, SUPPORTED_CURRENCIES } from './state';
+  import type { Currency } from '@/lib/types';
 
   function setHasSalary(yes: boolean) {
     wizard.update((w) => ({
@@ -15,6 +16,20 @@
   function setDay(value: number) {
     const clamped = Math.max(1, Math.min(31, Math.floor(value || 1)));
     wizard.update((w) => ({ ...w, salaryDayOfMonth: clamped }));
+  }
+
+  // Picking a salary currency that the user hasn't enabled yet should
+  // auto-enable it (and create a slot in openingBalances) so the rest
+  // of the wizard stays consistent.
+  function setSalaryCurrency(currency: Currency) {
+    wizard.update((w) => {
+      const active = w.activeCurrencies.includes(currency)
+        ? w.activeCurrencies
+        : [...w.activeCurrencies, currency];
+      const openingBalances = { ...w.openingBalances };
+      if (!(currency in openingBalances)) openingBalances[currency] = 0;
+      return { ...w, salaryCurrency: currency, activeCurrencies: active, openingBalances };
+    });
   }
 </script>
 
@@ -49,8 +64,9 @@
         <MoneyInput
           label={$t('onboarding.salary.amount')}
           bind:value={$wizard.salaryAmount}
-          bind:currency={$wizard.salaryCurrency}
-          currencies={$wizard.activeCurrencies}
+          currency={$wizard.salaryCurrency}
+          currencies={SUPPORTED_CURRENCIES}
+          onCurrencyChange={setSalaryCurrency}
         />
       </section>
 
