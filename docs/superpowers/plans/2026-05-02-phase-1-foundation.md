@@ -13,6 +13,7 @@
 - **Hard limit: 200 lines per file.** Enforced by ESLint `max-lines`.
 - No hardcoded colors outside `src/theme/`. No inline UI strings outside `src/i18n/`.
 - Commits frequently — at the end of every task.
+- **Tests use Given / When / Then comments** to label arrange, act, assert. See `tests/storage.test.ts` for the canonical style. Apply this to every test in this plan even where the code blocks below don't show the comments.
 
 ---
 
@@ -88,7 +89,7 @@ The two `git config` commands set identity **locally for this repo only** — th
 
 ```bash
 npm install svelte-spa-router lucide-svelte
-npm install -D vitest @testing-library/svelte @testing-library/jest-dom jsdom \
+npm install -D vitest @testing-library/svelte @testing-library/jest-dom happy-dom \
   eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin \
   eslint-plugin-svelte svelte-eslint-parser \
   prettier prettier-plugin-svelte
@@ -122,7 +123,7 @@ export default defineConfig({
   plugins: [svelte()],
   base: process.env.GITHUB_PAGES === 'true' ? '/financial_management/' : '/',
   test: {
-    environment: 'jsdom',
+    environment: 'happy-dom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
   },

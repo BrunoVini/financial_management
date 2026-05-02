@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [svelte()],
   base: process.env.GITHUB_PAGES === 'true' ? '/financial_management/' : '/',
   test: {
-    environment: 'jsdom',
+    environment: 'happy-dom',
     globals: true,
     setupFiles: ['./tests/setup.ts'],
   },
