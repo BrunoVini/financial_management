@@ -14,6 +14,7 @@
 - No hardcoded colors outside `src/theme/`. No inline UI strings outside `src/i18n/`.
 - Commits frequently — at the end of every task.
 - **Tests use Given / When / Then comments** to label arrange, act, assert. See `tests/storage.test.ts` for the canonical style. Apply this to every test in this plan even where the code blocks below don't show the comments.
+- **Path alias `@` maps to `src/`.** Use `import x from '@/lib/...'` instead of relative `../src/...` paths in tests and cross-folder imports. Configured in `tsconfig.app.json` (`paths`) and `vite.config.ts` (`resolve.alias`). Sibling imports in the same folder still use `./`.
 
 ---
 
@@ -467,7 +468,7 @@ git commit -m "feat(types): define core domain types"
 `tests/storage.test.ts`:
 ```ts
 import { describe, expect, it } from 'vitest';
-import { loadStore, saveStore, defaultStore, ROOT_KEY } from '../src/lib/storage';
+import { loadStore, saveStore, defaultStore, ROOT_KEY } from '@/lib/storage';
 
 describe('storage', () => {
   it('returns defaultStore when nothing is persisted', () => {
@@ -581,7 +582,7 @@ git commit -m "feat(storage): versioned localStorage wrapper with defaults"
 `tests/money.test.ts`:
 ```ts
 import { describe, expect, it } from 'vitest';
-import { convert, formatMoney } from '../src/lib/money';
+import { convert, formatMoney } from '@/lib/money';
 
 const ratesEurBase = { EUR: 1, BRL: 5.5, USD: 1.1, CAD: 1.5 };
 
@@ -682,8 +683,8 @@ git commit -m "feat(money): conversion via EUR base + locale-aware formatting"
 `tests/rates.test.ts`:
 ```ts
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ensureRates, todayIso, FRANKFURTER_URL } from '../src/lib/rates';
-import { defaultStore, saveStore, loadStore } from '../src/lib/storage';
+import { ensureRates, todayIso, FRANKFURTER_URL } from '@/lib/rates';
+import { defaultStore, saveStore, loadStore } from '@/lib/storage';
 
 describe('rates', () => {
   beforeEach(() => {
@@ -923,7 +924,7 @@ Expected: errors about missing `Palette` export — that's fine, fixed in Task 9
 ```ts
 import { describe, expect, it } from 'vitest';
 import { get } from 'svelte/store';
-import { theme, setTheme, applyThemeToDocument, type Palette } from '../src/theme/index';
+import { theme, setTheme, applyThemeToDocument, type Palette } from '@/theme/index';
 
 describe('theme', () => {
   it('starts in dark mode by default', () => {
@@ -1147,7 +1148,7 @@ git commit -m "feat(theme): global stylesheet with CSS custom properties"
 ```ts
 import { describe, expect, it } from 'vitest';
 import { get } from 'svelte/store';
-import { locale, setLocale, t, detectLocale } from '../src/i18n/index';
+import { locale, setLocale, t, detectLocale } from '@/i18n/index';
 
 describe('i18n', () => {
   it('defaults to pt-BR', () => {

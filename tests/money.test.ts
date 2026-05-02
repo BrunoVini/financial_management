@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { convert, formatMoney } from '../src/lib/money';
+import { convert, formatMoney } from '@/lib/money';
 
 const ratesEurBase = { EUR: 1, BRL: 5.5, USD: 1.1, CAD: 1.5 };
 

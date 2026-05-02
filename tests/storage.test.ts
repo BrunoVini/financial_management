@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadStore, saveStore, defaultStore, ROOT_KEY } from '../src/lib/storage';
+import { loadStore, saveStore, defaultStore, ROOT_KEY } from '@/lib/storage';
 
 describe('storage', () => {
   it('returns defaultStore when nothing is persisted', () => {
