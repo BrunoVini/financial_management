@@ -13,8 +13,9 @@
 - **Hard limit: 200 lines per file.** Enforced by ESLint `max-lines`.
 - No hardcoded colors outside `src/theme/`. No inline UI strings outside `src/i18n/`.
 - Commits frequently — at the end of every task.
-- **Tests use Given / When / Then comments** to label arrange, act, assert. See `tests/storage.test.ts` for the canonical style. Apply this to every test in this plan even where the code blocks below don't show the comments.
+- **Tests use Given / When / Then comments** to label arrange, act, assert. See `tests/lib/storage.test.ts` for the canonical style. Apply this to every test in this plan even where the code blocks below don't show the comments.
 - **Path alias `@` maps to `src/`.** Use `import x from '@/lib/...'` instead of relative `../src/...` paths in tests and cross-folder imports. Configured in `tsconfig.app.json` (`paths`) and `vite.config.ts` (`resolve.alias`). Sibling imports in the same folder still use `./`.
+- **Tests mirror the `src/` folder structure.** A test for `src/lib/storage.ts` lives at `tests/lib/storage.test.ts`. A test for `src/theme/index.ts` lives at `tests/theme/index.test.ts`. Only `tests/setup.ts` (global Vitest setup) sits at the `tests/` root.
 
 ---
 
@@ -23,7 +24,9 @@
 ```
 .github/workflows/deploy.yml
 .gitignore
-.eslintrc.cjs
+.editorconfig
+.nvmrc
+eslint.config.js
 .prettierrc
 package.json
 tsconfig.json
@@ -58,11 +61,15 @@ src/
     Settings.svelte
     Onboarding.svelte
 tests/
-  storage.test.ts
-  money.test.ts
-  rates.test.ts
-  theme.test.ts
-  i18n.test.ts
+  setup.ts
+  lib/
+    storage.test.ts
+    money.test.ts
+    rates.test.ts
+  theme/
+    index.test.ts
+  i18n/
+    index.test.ts
 ```
 
 ---
@@ -461,11 +468,11 @@ git commit -m "feat(types): define core domain types"
 ## Task 5: Storage Wrapper (TDD)
 
 **Files:**
-- Create: `tests/storage.test.ts`, `src/lib/storage.ts`
+- Create: `tests/lib/storage.test.ts`, `src/lib/storage.ts`
 
 - [ ] **Step 1: Write failing tests**
 
-`tests/storage.test.ts`:
+`tests/lib/storage.test.ts`:
 ```ts
 import { describe, expect, it } from 'vitest';
 import { loadStore, saveStore, defaultStore, ROOT_KEY } from '@/lib/storage';
@@ -566,7 +573,7 @@ Expected: 5 PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add tests/storage.test.ts src/lib/storage.ts
+git add tests/lib/storage.test.ts src/lib/storage.ts
 git commit -m "feat(storage): versioned localStorage wrapper with defaults"
 ```
 
@@ -575,11 +582,11 @@ git commit -m "feat(storage): versioned localStorage wrapper with defaults"
 ## Task 6: Money Utilities (TDD)
 
 **Files:**
-- Create: `tests/money.test.ts`, `src/lib/money.ts`
+- Create: `tests/lib/money.test.ts`, `src/lib/money.ts`
 
 - [ ] **Step 1: Write failing tests**
 
-`tests/money.test.ts`:
+`tests/lib/money.test.ts`:
 ```ts
 import { describe, expect, it } from 'vitest';
 import { convert, formatMoney } from '@/lib/money';
@@ -667,7 +674,7 @@ Expected: 6 PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add tests/money.test.ts src/lib/money.ts
+git add tests/lib/money.test.ts src/lib/money.ts
 git commit -m "feat(money): conversion via EUR base + locale-aware formatting"
 ```
 
@@ -676,11 +683,11 @@ git commit -m "feat(money): conversion via EUR base + locale-aware formatting"
 ## Task 7: Rates Client + Daily Cache (TDD)
 
 **Files:**
-- Create: `tests/rates.test.ts`, `src/lib/rates.ts`
+- Create: `tests/lib/rates.test.ts`, `src/lib/rates.ts`
 
 - [ ] **Step 1: Write failing tests**
 
-`tests/rates.test.ts`:
+`tests/lib/rates.test.ts`:
 ```ts
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ensureRates, todayIso, FRANKFURTER_URL } from '@/lib/rates';
@@ -818,7 +825,7 @@ Expected: 5 PASS.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add tests/rates.test.ts src/lib/rates.ts
+git add tests/lib/rates.test.ts src/lib/rates.ts
 git commit -m "feat(rates): frankfurter client with daily cache and stale fallback"
 ```
 
@@ -916,11 +923,11 @@ Expected: errors about missing `Palette` export — that's fine, fixed in Task 9
 ## Task 9: Theme Store + CSS Variables (TDD)
 
 **Files:**
-- Create: `tests/theme.test.ts`, `src/theme/index.ts`
+- Create: `tests/theme/index.test.ts`, `src/theme/index.ts`
 
 - [ ] **Step 1: Write failing tests**
 
-`tests/theme.test.ts`:
+`tests/theme/index.test.ts`:
 ```ts
 import { describe, expect, it } from 'vitest';
 import { get } from 'svelte/store';
@@ -1021,7 +1028,7 @@ Expected: 4 PASS.
 - [ ] **Step 5: Commit (Tasks 8 + 9 together)**
 
 ```bash
-git add src/theme tests/theme.test.ts
+git add src/theme tests/theme/index.test.ts
 git commit -m "feat(theme): tokens + dark/light palettes + reactive store"
 ```
 
@@ -1140,11 +1147,11 @@ git commit -m "feat(theme): global stylesheet with CSS custom properties"
 ## Task 11: i18n Module (TDD)
 
 **Files:**
-- Create: `tests/i18n.test.ts`, `src/i18n/pt-br.ts`, `src/i18n/en.ts`, `src/i18n/index.ts`
+- Create: `tests/i18n/index.test.ts`, `src/i18n/pt-br.ts`, `src/i18n/en.ts`, `src/i18n/index.ts`
 
 - [ ] **Step 1: Write failing tests**
 
-`tests/i18n.test.ts`:
+`tests/i18n/index.test.ts`:
 ```ts
 import { describe, expect, it } from 'vitest';
 import { get } from 'svelte/store';
@@ -1249,7 +1256,7 @@ Expected: 5 PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-git add tests/i18n.test.ts src/i18n
+git add tests/i18n/index.test.ts src/i18n
 git commit -m "feat(i18n): pt-BR and en dictionaries with reactive locale store"
 ```
 
