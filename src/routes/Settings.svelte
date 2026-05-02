@@ -4,6 +4,7 @@
   import Categories from './settings/Categories.svelte';
   import General from './settings/General.svelte';
   import Backup from './settings/Backup.svelte';
+  import Reset from './settings/Reset.svelte';
 </script>
 
 <section class="page">
@@ -12,6 +13,7 @@
   <General />
   <Categories />
   <Backup />
+  <Reset />
 </section>
 
 <style>

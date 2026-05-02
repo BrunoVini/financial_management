@@ -63,6 +63,14 @@ export const en = {
   'settings.backup.import.confirm':
     'This will overwrite all your current data. Continue?',
   'settings.backup.import.invalid': 'Invalid file — could not import.',
+  'settings.section.danger': 'Danger zone',
+  'settings.reset.button': 'Erase all data',
+  'settings.reset.title': 'Erase all data?',
+  'settings.reset.body':
+    'This permanently removes every setting, account, category, transaction and investment. It cannot be undone. Consider exporting a backup first.',
+  'settings.reset.confirm.label': 'To confirm, type ERASE in the field below',
+  'settings.reset.confirm.placeholder': 'ERASE',
+  'settings.reset.confirm.action': 'Erase everything',
   'common.save': 'Save',
   'common.cancel': 'Cancel',
   'common.delete': 'Delete',

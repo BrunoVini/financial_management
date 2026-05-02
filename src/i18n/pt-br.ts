@@ -63,6 +63,14 @@ export const ptBr = {
   'settings.backup.import.confirm':
     'Isto vai substituir todos os seus dados atuais. Continuar?',
   'settings.backup.import.invalid': 'Arquivo inválido — não foi possível importar.',
+  'settings.section.danger': 'Zona de perigo',
+  'settings.reset.button': 'Apagar todos os dados',
+  'settings.reset.title': 'Apagar todos os dados?',
+  'settings.reset.body':
+    'Esta ação remove permanentemente todas as suas configurações, contas, categorias, transações e investimentos. Não pode ser desfeita. Considere exportar um backup antes.',
+  'settings.reset.confirm.label': 'Para confirmar, digite EXCLUIR no campo abaixo',
+  'settings.reset.confirm.placeholder': 'EXCLUIR',
+  'settings.reset.confirm.action': 'Apagar tudo',
   'common.save': 'Salvar',
   'common.cancel': 'Cancelar',
   'common.delete': 'Excluir',

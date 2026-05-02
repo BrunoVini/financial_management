@@ -114,6 +114,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `R$ NaN` artifact on Overview pills right after onboarding: `App.svelte` `onMount` early-returned when `settings.onboarded === false` and never came back to fetch rates, leaving `ratesCache === null` and forcing `convert()` to return `NaN`. A `$effect` now reruns the boot (rollover + rates fetch) the moment `settings.onboarded` flips to `true`, guarded by a `booted` flag to avoid re-fetching on subsequent setting changes.
 - `BalancePill` shows the converted line whenever `convertedAmount` is provided. The "skip while loading" guard moved up to `NetWorthCard.safeConvert(...)` which returns `undefined` until the rates cache exists — once rates arrive (≤1s typical) the converted line appears with the real value.
+- Onboarding Step 2 (salary) now exposes all four supported currencies (BRL/USD/CAD/EUR) instead of only the ones already activated. Picking a currency that's not yet in `activeCurrencies` auto-activates it and seeds an `openingBalances` slot, so Step 3 stays in sync.
+
+### Added (Phase 3 polish)
+
+- "Danger zone" Settings section with an "Erase all data" button that opens a confirmation modal. The destructive action is only enabled after the user types `EXCLUIR` (PT-BR) or `ERASE` (EN) in the confirmation field. On confirm, the store is replaced with `defaultStore()` and the user is redirected to `/onboarding`.
 
 ### Changed
 
