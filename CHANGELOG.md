@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Onboarding language picker is now a flag-emoji dropdown (`src/components/LanguageDropdown.svelte` — accessible listbox with click-outside / Esc / arrow-key navigation, 🇧🇷 🇺🇸 🇫🇷 🇪🇸) replacing the four-radio row in `Step1Language.svelte`. Picking a language now applies it instantly via `setLocale(...)` instead of waiting for `applyWizard` at the end of the wizard, so every `$t(...)` on screen re-renders as soon as the user selects an option.
+
 ### Added
 
 - French and Spanish locales. `Language` is now `'pt-BR' | 'en' | 'fr' | 'es'`. New `src/i18n/fr.ts` and `src/i18n/es.ts` carry full translations for every existing key (parity test in `tests/i18n/parity.test.ts` keeps them locked to the English key set, including the dangerous-action confirmation words: `EXCLUIR` / `ERASE` / `SUPPRIMER` / `BORRAR`). `detectLocale` now picks `pt-BR` / `fr` / `es` from navigator prefixes and falls back to `en`. `Intl.NumberFormat` mapping in `money.ts` adds `fr-FR` / `es-ES`. Default seeded categories (`db/categories.ts`) include localized expense + investment names. Settings → Appearance and the Onboarding language step expose all four options. The `Reset.svelte` confirm-word switches per locale. Command palette's `cfg-lang` entry now cycles through the four supported languages.

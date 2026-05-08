@@ -1,12 +1,18 @@
 <script lang="ts">
-  import { t } from '@/i18n';
+  import { t, setLocale } from '@/i18n';
   import Card from '@/components/Card.svelte';
   import CurrencyPicker from '@/components/CurrencyPicker.svelte';
+  import LanguageDropdown from '@/components/LanguageDropdown.svelte';
   import { wizard, SUPPORTED_CURRENCIES } from './state';
   import type { Currency, Language } from '@/lib/types';
 
   function setLanguage(lang: Language) {
     wizard.update((w) => ({ ...w, language: lang }));
+    // Apply the locale immediately so every $t(...) on screen updates
+    // as the user picks. applyWizard will sync settings.language at the
+    // end of the wizard; the appStore subscriber re-syncs the locale
+    // store from settings, so the two stay aligned afterwards.
+    setLocale(lang);
   }
 
   function setDisplayCurrency(c: Currency) {
@@ -34,20 +40,11 @@
   <div class="grid">
     <section>
       <h4>{$t('onboarding.language')}</h4>
-      <div class="radios">
-        {#each [{ code: 'pt-BR', label: 'Português (Brasil)' }, { code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }, { code: 'es', label: 'Español' }] as opt (opt.code)}
-          <label>
-            <input
-              type="radio"
-              name="lang"
-              value={opt.code}
-              checked={$wizard.language === opt.code}
-              onchange={() => setLanguage(opt.code as Language)}
-            />
-            {opt.label}
-          </label>
-        {/each}
-      </div>
+      <LanguageDropdown
+        value={$wizard.language}
+        onchange={(lang) => setLanguage(lang)}
+        ariaLabel={$t('onboarding.language')}
+      />
     </section>
 
     <section>
@@ -100,7 +97,6 @@
     color: var(--text-muted);
     font-size: 0.86rem;
   }
-  .radios,
   .checks {
     display: flex;
     flex-wrap: wrap;
