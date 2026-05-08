@@ -52,8 +52,19 @@ export interface RolloverResult {
   closedMonths: MonthKey[];
 }
 
+/**
+ * Natural grace deadline for a month: 1st of the next month at 00:00 UTC
+ * plus GRACE_DAYS days. After this instant the month should be closed.
+ */
+function naturalGraceDeadline(key: MonthKey): Date {
+  const next = nextMonthKey(key);
+  const [y, m] = next.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, 1 + GRACE_DAYS));
+}
+
 export function rolloverIfNeeded(store: Store, today: Date): RolloverResult {
   const todayKey = monthKey(today);
+  const todayMs = today.getTime();
   const created: MonthKey[] = [];
   const closed: MonthKey[] = [];
   let next = store;
@@ -63,14 +74,23 @@ export function rolloverIfNeeded(store: Store, today: Date): RolloverResult {
     const nextKey = nextMonthKey(newest);
     const opening = inheritedOpeningBalances(next, newest);
 
-    // Mark previous as 'grace' if still open
+    // Transition the previous month if still open. Use the *natural* grace
+    // deadline (first of the following month + GRACE_DAYS) so that months
+    // whose grace window already elapsed go straight to 'closed' instead
+    // of receiving a fresh 7-day window every time the user opens the app.
     const prev = next.months[newest];
     if (prev.status === 'open') {
-      const closeDeadline = new Date(today.getTime() + GRACE_DAYS * 86_400_000).toISOString();
+      const deadline = naturalGraceDeadline(newest);
+      const isPastGrace = todayMs >= deadline.getTime();
+      const status = isPastGrace ? 'closed' : 'grace';
       next = {
         ...next,
-        months: { ...next.months, [newest]: { ...prev, status: 'grace', closedAt: closeDeadline } },
+        months: {
+          ...next.months,
+          [newest]: { ...prev, status, closedAt: deadline.toISOString() },
+        },
       };
+      if (isPastGrace) closed.push(newest);
     }
 
     next = createMonth(next, nextKey, opening);
@@ -78,8 +98,7 @@ export function rolloverIfNeeded(store: Store, today: Date): RolloverResult {
     newest = nextKey;
   }
 
-  // Sweep grace months whose deadline elapsed
-  const todayMs = today.getTime();
+  // Sweep any pre-existing grace months whose deadline already elapsed.
   for (const key of Object.keys(next.months)) {
     const m = next.months[key];
     if (m.status === 'grace' && m.closedAt && new Date(m.closedAt).getTime() <= todayMs) {

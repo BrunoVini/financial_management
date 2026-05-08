@@ -82,18 +82,28 @@ describe('rolloverIfNeeded', () => {
     expect(r.store.months['2026-04'].status).toBe('closed');
   });
 
-  it('flips an open previous month to grace with a deadline 7 days out', () => {
+  it('flips an open previous month to grace with a natural deadline', () => {
     // Given: an open previous month
     const s = createMonth(defaultStore(), '2026-04', { BRL: 0 });
-    // When: rollover on May 1
+    // When: rollover early in May (still inside the natural grace window)
     const today = new Date('2026-05-01T12:00:00Z');
     const r = rolloverIfNeeded(s, today);
-    // Then: previous becomes 'grace' with closedAt ~= today + 7 days
+    // Then: previous becomes 'grace' with closedAt = first of next month + GRACE_DAYS
     const m = r.store.months['2026-04'];
     expect(m.status).toBe('grace');
     expect(m.closedAt).toBeTruthy();
-    const closeAt = new Date(m.closedAt!).getTime();
-    expect(closeAt - today.getTime()).toBe(GRACE_DAYS * 86_400_000);
+    const expected = new Date(Date.UTC(2026, 4, 1 + GRACE_DAYS)).toISOString();
+    expect(m.closedAt).toBe(expected);
+  });
+
+  it('closes an old open month directly when its grace window already elapsed', () => {
+    // Given: a January month left 'open' (user was inactive for months)
+    const s = createMonth(defaultStore(), '2026-01', { BRL: 0 });
+    // When: rollover happens in May (months past the natural Feb-08 deadline)
+    const r = rolloverIfNeeded(s, new Date('2026-05-15T12:00:00Z'));
+    // Then: 2026-01 is 'closed' (not 'grace'), and reported via closedMonths
+    expect(r.store.months['2026-01'].status).toBe('closed');
+    expect(r.closedMonths).toContain('2026-01');
   });
 
   it('creates intermediate months when more than one month passed', () => {
