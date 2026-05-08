@@ -1,8 +1,15 @@
 export const tokens = {
   spacing: { 1: '4px', 2: '8px', 3: '12px', 4: '16px', 5: '24px', 6: '32px', 7: '48px' },
-  radius: { sm: '4px', md: '8px', lg: '12px', xl: '16px', xxl: '24px', pill: '999px' },
+  // Pastoral favors generous rounding — radius bumped across the board.
+  radius: { sm: '6px', md: '10px', lg: '16px', xl: '22px', xxl: '28px', pill: '999px' },
   type: {
-    family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif',
+    // Display = serif with optical-size axis (headings, big numbers, accents).
+    // Body = humanist sans (warm, friendly, very readable at small sizes).
+    display:
+      "'Fraunces', 'Iowan Old Style', 'Apple Garamond', 'Hoefler Text', Georgia, ui-serif, serif",
+    body: "'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI Symbol'",
+    // `family` kept as legacy alias = body (existing call sites continue to work).
+    family: "'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Segoe UI Symbol'",
     size: {
       xs: 'clamp(0.72rem, 0.7rem + 0.1vw, 0.78rem)',
       sm: 'clamp(0.82rem, 0.8rem + 0.1vw, 0.9rem)',

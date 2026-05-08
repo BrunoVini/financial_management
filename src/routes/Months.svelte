@@ -1,11 +1,11 @@
 <script lang="ts">
   import { link } from 'svelte-spa-router';
   import { t } from '@/i18n';
-  import Card from '@/components/Card.svelte';
   import { appStore, settings } from '@/lib/appStore';
   import { formatMoney } from '@/lib/money';
   import { monthExpenseTotal, monthIncomeTotal } from '@/lib/db/transactions';
   import StatusFilter from '@/components/StatusFilter.svelte';
+  import TopBar from './overview/TopBar.svelte';
   import type { MonthStatus } from '@/lib/types';
 
   let filter = $state<MonthStatus | 'all'>('all');
@@ -17,9 +17,9 @@
   });
 
   function statusLabel(status: MonthStatus): string {
-    if (status === 'open') return 'Aberto';
-    if (status === 'grace') return 'Graça';
-    return 'Fechado';
+    if (status === 'open') return $t('months.filter.open');
+    if (status === 'grace') return $t('months.filter.grace');
+    return $t('months.filter.closed');
   }
 
   function spent(key: string): number {
@@ -39,53 +39,67 @@
       $appStore.ratesCache?.rates ?? {},
     );
   }
+
+  function fmt(amt: number): string {
+    return formatMoney(amt, $settings.displayCurrency, $settings.language);
+  }
+
+  function monthName(key: string): string {
+    if (!key) return '';
+    const [y, m] = key.split('-').map(Number);
+    // Use UTC time-zone explicitly so the rendered month doesn't drift
+    // into the previous one in negative-offset locales (BRT etc.).
+    return new Intl.DateTimeFormat($settings.language === 'pt-BR' ? 'pt-BR' : $settings.language, {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    }).format(new Date(Date.UTC(y, m - 1, 1)));
+  }
 </script>
 
 <section class="page">
-  <h1>{$t('nav.months')}</h1>
+  <TopBar />
+
+  <header class="page-head">
+    <h1>{$t('nav.months')}</h1>
+    <span class="section-sub">{entries.length === 1 ? '1 mês' : `${entries.length} meses`}</span>
+  </header>
 
   <StatusFilter bind:value={filter} />
 
   {#if entries.length === 0}
-    <Card padding="md">
-      <p class="empty">{$t('months.empty')}</p>
-    </Card>
+    <div class="empty-card">
+      <p>{$t('months.empty')}</p>
+    </div>
   {/if}
 
   <ul class="timeline">
     {#each entries as month (month.key)}
       <li>
         <a href={`/months/${month.key}`} use:link class="card-link">
-          <Card padding="md" variant="glass">
-            <header>
-              <h3>{month.key}</h3>
+          <article class="month-card">
+            <header class="head">
+              <div class="title-block">
+                <span class="month-name">{monthName(month.key)}</span>
+                <span class="month-key">{month.key}</span>
+              </div>
               <span class="badge" data-status={month.status}>{statusLabel(month.status)}</span>
             </header>
             <dl>
               <div>
                 <dt>{$t('overview.income')}</dt>
-                <dd class="positive">
-                  {formatMoney(income(month.key), $settings.displayCurrency, $settings.language)}
-                </dd>
+                <dd class="positive">{fmt(income(month.key))}</dd>
               </div>
               <div>
                 <dt>{$t('overview.spent')}</dt>
-                <dd class="negative">
-                  {formatMoney(spent(month.key), $settings.displayCurrency, $settings.language)}
-                </dd>
+                <dd class="negative">{fmt(spent(month.key))}</dd>
               </div>
               <div>
                 <dt>Saldo</dt>
-                <dd>
-                  {formatMoney(
-                    income(month.key) - spent(month.key),
-                    $settings.displayCurrency,
-                    $settings.language,
-                  )}
-                </dd>
+                <dd>{fmt(income(month.key) - spent(month.key))}</dd>
               </div>
             </dl>
-          </Card>
+          </article>
         </a>
       </li>
     {/each}
@@ -94,78 +108,70 @@
 
 <style>
   .page {
-    padding: var(--space-5);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    max-width: 880px;
+    padding: 56px 48px 96px;
+    display: flex; flex-direction: column; gap: 32px;
+    max-width: 1100px; margin: 0 auto;
+  }
+  @media (max-width: 1024px) { .page { padding: 48px 32px 96px; gap: 28px; } }
+  @media (max-width: 768px) { .page { padding: 32px 20px 96px; gap: 24px; } }
+  @media (max-width: 480px) { .page { padding: 24px 16px 96px; gap: 20px; } }
+
+  .page-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: var(--space-3); padding-left: 8px;
   }
   h1 {
-    font-size: var(--space-6);
-    margin: 0;
+    margin: 0; font-family: var(--font-display); font-weight: 500;
+    font-size: clamp(2rem, 1.8rem + 1vw, 2.6rem);
+    letter-spacing: -0.025em; color: var(--text-primary);
   }
-  .empty {
-    margin: 0;
-    color: var(--text-muted);
+  .empty-card {
+    background: var(--bg-raised); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xxl); padding: var(--space-6);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 4px 14px rgba(46, 42, 38, 0.05);
+    color: var(--text-muted); font-family: var(--font-display); font-style: italic;
   }
-  .timeline {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+  :global([data-theme='dark']) .empty-card {
+    box-shadow: 0 1px 0 rgba(245, 239, 230, 0.04) inset, 0 4px 14px rgba(0, 0, 0, 0.28);
   }
-  .card-link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
+  .timeline { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+  .card-link { display: block; text-decoration: none; color: inherit; transition: transform var(--motion-fast); }
+  .card-link:hover { transform: translateY(-1px); }
+  .month-card {
+    background: var(--bg-raised); border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xxl); padding: 22px;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 4px 14px rgba(46, 42, 38, 0.05);
   }
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-3);
+  :global([data-theme='dark']) .month-card {
+    box-shadow: 0 1px 0 rgba(245, 239, 230, 0.04) inset, 0 4px 14px rgba(0, 0, 0, 0.28);
   }
-  h3 {
-    margin: 0;
-    color: var(--text-primary);
+  .head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: var(--space-3); margin-bottom: var(--space-4);
   }
+  .title-block { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .month-name {
+    font-family: var(--font-display); font-weight: 500; font-size: 1.4rem;
+    letter-spacing: -0.015em; color: var(--text-primary); text-transform: capitalize;
+  }
+  .month-key { font-family: var(--font-display); font-style: italic; font-size: 0.82rem; color: var(--text-muted); }
   .badge {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 2px 8px;
-    border-radius: var(--radius-pill);
-    background: var(--bg-glass);
-    color: var(--text-secondary);
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.16em;
+    padding: 4px 12px; border-radius: var(--radius-pill);
+    background: rgba(124, 148, 116, 0.18); color: var(--positive); flex-shrink: 0;
   }
-  .badge[data-status='grace'] {
-    color: var(--warning);
-  }
-  .badge[data-status='closed'] {
-    color: var(--text-muted);
-  }
-  dl {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-2);
-    margin: 0;
-  }
-  @media (max-width: 540px) {
-    dl {
-      grid-template-columns: 1fr;
-    }
-  }
+  .badge[data-status='grace'] { background: rgba(168, 122, 58, 0.20); color: var(--warning); }
+  .badge[data-status='closed'] { background: var(--bg-glass); color: var(--text-muted); }
+  dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin: 0; }
+  @media (max-width: 540px) { dl { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 360px) { dl { grid-template-columns: 1fr; } }
   dt {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-secondary);
+    font-family: var(--font-body); font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.18em; color: var(--text-muted);
   }
   dd {
-    margin: 2px 0 0;
-    font-variant-numeric: tabular-nums;
+    margin: 4px 0 0; font-family: var(--font-display); font-weight: 500;
+    font-size: 1.15rem; letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
   }
   .positive { color: var(--positive); }
   .negative { color: var(--negative); }

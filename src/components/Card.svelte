@@ -26,42 +26,52 @@
 
 <style>
   .card {
-    border-radius: var(--radius-lg);
+    /* Pastoral: generous rounding (xxl ≈ 28px). The signature "raised
+       paper" look is an inset 1px top highlight (white/cream sheen) +
+       a soft warm outer shadow — added in the body of this rule rather
+       than via the legacy --shadow-glass token so the inset stays
+       consistent across themes. */
+    border-radius: var(--radius-xxl);
     border: 1px solid var(--border-subtle);
-    box-shadow: var(--shadow-glass);
-    backdrop-filter: blur(10px);
-    transition: border-color var(--motion-fast);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 4px 14px rgba(46, 42, 38, 0.05);
+    transition:
+      border-color var(--motion-fast),
+      box-shadow var(--motion-base);
+    background: var(--bg-raised);
+  }
+  :global([data-theme='dark']) .card {
+    box-shadow:
+      0 1px 0 rgba(245, 239, 230, 0.04) inset,
+      0 4px 14px rgba(0, 0, 0, 0.28);
   }
   .card[data-variant='glass'] {
     background: var(--bg-glass);
-  }
-  .card[data-variant='raised'] {
-    background: var(--bg-raised);
-    backdrop-filter: none;
   }
   .card[data-padding='sm'] {
     padding: var(--space-3);
   }
   .card[data-padding='md'] {
-    padding: var(--space-4);
+    padding: var(--space-5);
   }
   .card[data-padding='lg'] {
-    padding: var(--space-5);
+    padding: var(--space-6);
   }
   header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-3);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
   }
   h3 {
     margin: 0;
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
   }
   .actions {
     display: flex;

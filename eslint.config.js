@@ -44,4 +44,10 @@ export default [
     files: ['tests/**/*.ts', '**/*.test.ts'],
     rules: { 'max-lines': 'off' },
   },
+  {
+    // i18n dictionaries are flat key→string maps; line counts reflect
+    // breadth of localized surface, not complexity.
+    files: ['src/i18n/*.ts'],
+    rules: { 'max-lines': 'off' },
+  },
 ];

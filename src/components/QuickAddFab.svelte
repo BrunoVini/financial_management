@@ -87,7 +87,8 @@
   .scrim {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(46, 42, 38, 0.45);
+    backdrop-filter: blur(2px);
     border: none;
     cursor: default;
     animation: fade var(--motion-base) ease-out;
@@ -98,29 +99,30 @@
     right: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
-    min-width: 180px;
+    gap: 6px;
+    min-width: 200px;
     animation: rise var(--motion-base) ease-out;
   }
   .menu button {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
+    padding: 12px var(--space-4);
     background: var(--bg-raised);
     color: var(--text-primary);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 6px 18px rgba(46, 42, 38, 0.14);
     cursor: pointer;
     font: inherit;
+    font-weight: 500;
     text-align: left;
     min-height: 44px;
+    transition: border-color var(--motion-fast), color var(--motion-fast);
   }
   .menu button:hover {
-    background: var(--bg-glass);
-    color: var(--text-primary);
     border-color: var(--accent-primary);
+    color: var(--accent-primary);
   }
   .fab {
     width: 56px;
@@ -129,12 +131,15 @@
     background: var(--accent-gradient);
     color: white;
     border: none;
-    box-shadow: var(--shadow-glow), var(--shadow-glass);
+    box-shadow: 0 8px 22px rgba(124, 148, 116, 0.32), 0 4px 14px rgba(46, 42, 38, 0.12);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: transform var(--motion-base) ease;
+    transition: transform var(--motion-base) ease, box-shadow var(--motion-base) ease;
+  }
+  .fab:hover {
+    box-shadow: 0 12px 28px rgba(124, 148, 116, 0.38), 0 4px 14px rgba(46, 42, 38, 0.16);
   }
   .fab.open {
     transform: rotate(45deg);

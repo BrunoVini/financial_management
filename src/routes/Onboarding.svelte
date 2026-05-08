@@ -77,24 +77,27 @@
   .wizard {
     max-width: 720px;
     margin: 0 auto;
-    padding: var(--space-6) var(--space-5);
+    padding: var(--space-7) var(--space-5);
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
+    gap: var(--space-6);
   }
   header {
     text-align: center;
   }
   h1 {
-    font-size: clamp(1.6rem, 1.4rem + 1vw, 2.2rem);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2rem, 1.8rem + 1vw, 2.8rem);
+    letter-spacing: -0.025em;
     margin: 0 0 var(--space-2);
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--text-primary);
   }
   .subtitle {
+    font-family: var(--font-body);
     color: var(--text-secondary);
+    font-size: 1rem;
     margin: 0 0 var(--space-5);
   }
   .steps {
@@ -102,7 +105,7 @@
     padding: 0;
     margin: 0;
     display: flex;
-    gap: var(--space-2);
+    gap: var(--space-3);
     justify-content: center;
     flex-wrap: wrap;
   }
@@ -111,28 +114,36 @@
     align-items: center;
     gap: var(--space-2);
     color: var(--text-muted);
-    font-size: 0.82rem;
+    font-size: 0.86rem;
   }
   .steps li.active {
     color: var(--text-primary);
-    font-weight: 500;
+    font-weight: 600;
   }
   .steps li.done {
     color: var(--accent-primary);
   }
   .dot {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     border: 1px solid var(--border-strong);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    transition: background var(--motion-base), color var(--motion-base);
   }
   .steps li.active .dot {
     background: var(--accent-gradient);
     color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(124, 148, 116, 0.22);
+  }
+  .steps li.done .dot {
+    background: rgba(124, 148, 116, 0.16);
+    color: var(--accent-primary);
     border-color: transparent;
   }
   footer {
@@ -141,14 +152,19 @@
     gap: var(--space-3);
   }
   button {
-    padding: var(--space-3) var(--space-5);
-    background: var(--bg-raised);
+    padding: 12px var(--space-5);
+    background: var(--bg-glass);
     color: var(--text-primary);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-pill);
     cursor: pointer;
     font: inherit;
+    font-weight: 600;
     min-height: 44px;
+    transition: border-color var(--motion-fast), color var(--motion-fast);
+  }
+  button:hover:not(:disabled) {
+    border-color: var(--text-muted);
   }
   button:disabled {
     opacity: 0.4;
@@ -158,5 +174,10 @@
     background: var(--accent-gradient);
     color: white;
     border-color: transparent;
+    box-shadow: 0 4px 14px rgba(124, 148, 116, 0.25);
+  }
+  button.primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(124, 148, 116, 0.32);
   }
 </style>

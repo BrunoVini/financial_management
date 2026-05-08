@@ -57,20 +57,24 @@
 
   <section>
     <h4>{$t('settings.general.activeCurrencies')}</h4>
-    <div class="checks">
+    <div class="badges">
       {#each SUPPORTED_CURRENCIES as c (c)}
         {@const isDisplay = c === $settings.displayCurrency}
-        {@const checked = $settings.activeCurrencies.includes(c)}
-        {@const inUse = checked && isCurrencyInUse(c)}
-        <label class:locked={isDisplay || inUse} title={inUse ? 'In use by an account' : ''}>
-          <input
-            type="checkbox"
-            {checked}
-            disabled={isDisplay || inUse}
-            onchange={() => toggleActiveCurrency(c)}
-          />
+        {@const active = $settings.activeCurrencies.includes(c)}
+        {@const inUse = active && isCurrencyInUse(c)}
+        {@const locked = isDisplay || inUse}
+        <button
+          type="button"
+          class="badge"
+          class:active
+          class:locked
+          disabled={locked}
+          aria-pressed={active}
+          title={isDisplay ? 'Moeda principal' : inUse ? 'Em uso por uma conta' : ''}
+          onclick={() => toggleActiveCurrency(c)}
+        >
           {c}
-        </label>
+        </button>
       {/each}
     </div>
   </section>
@@ -111,19 +115,35 @@
     letter-spacing: 0.06em;
     color: var(--text-secondary);
   }
-  .checks {
+  .badges {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-4);
-  }
-  label {
-    display: inline-flex;
-    align-items: center;
     gap: var(--space-2);
   }
-  label.locked {
-    opacity: 0.6;
+  .badge {
+    font: inherit;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background var(--motion-fast), color var(--motion-fast), border-color var(--motion-fast);
   }
+  .badge:hover:not(:disabled) {
+    background: rgba(124, 148, 116, 0.14);
+    color: var(--text-primary);
+  }
+  .badge.active {
+    background: rgba(124, 148, 116, 0.18);
+    color: var(--accent-primary);
+    border-color: rgba(124, 148, 116, 0.45);
+  }
+  .badge.locked { cursor: not-allowed; opacity: 0.7; }
   .below {
     margin-top: var(--space-3);
   }

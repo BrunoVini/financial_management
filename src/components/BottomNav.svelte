@@ -34,26 +34,33 @@
     display: none;
     background: var(--bg-raised);
     border-top: 1px solid var(--border-subtle);
-    padding: var(--space-2);
-    gap: var(--space-1);
+    padding: 6px var(--space-2);
+    gap: 4px;
     justify-content: space-around;
     z-index: 10;
+    box-shadow: 0 -4px 14px rgba(46, 42, 38, 0.06);
   }
   a {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
-    padding: var(--space-2);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
+    gap: 3px;
+    padding: 6px var(--space-2);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
     min-height: 44px;
+    transition:
+      color var(--motion-fast),
+      background var(--motion-fast);
   }
   a.active {
     color: var(--accent-primary);
+    background: var(--bg-glass);
   }
   @media (max-width: 768px) {
     nav {

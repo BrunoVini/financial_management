@@ -154,9 +154,11 @@
   label {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
-    color: var(--text-secondary);
-    font-size: 0.82rem;
+    gap: 6px;
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--text-muted);
+    font-size: 0.92rem;
   }
   input[type='text'],
   input[type='number'],
@@ -181,18 +183,23 @@
     font-size: 0.86rem;
   }
   button {
-    padding: var(--space-2) var(--space-4);
-    background: var(--bg-glass);
-    color: var(--text-primary);
+    padding: 10px var(--space-5);
+    background: transparent;
+    color: var(--text-secondary);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-pill);
     cursor: pointer;
     font: inherit;
+    font-weight: 600;
     min-height: 40px;
+    transition: border-color var(--motion-fast), color var(--motion-fast);
   }
+  button:hover { border-color: var(--text-muted); color: var(--text-primary); }
   button.primary {
     background: var(--accent-gradient);
-    color: white;
+    color: #fff;
     border-color: transparent;
+    box-shadow: 0 4px 14px rgba(124, 148, 116, 0.22);
   }
+  button.primary:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(124, 148, 116, 0.3); }
 </style>

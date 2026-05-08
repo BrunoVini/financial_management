@@ -48,14 +48,19 @@
 <style>
   .value {
     margin: 0;
-    font-size: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.7rem;
+    letter-spacing: -0.02em;
     color: var(--negative);
     font-variant-numeric: tabular-nums;
   }
   .meta {
-    margin: var(--space-1) 0 var(--space-3);
+    margin: 6px 0 var(--space-4);
+    font-family: var(--font-display);
+    font-style: italic;
     color: var(--text-muted);
-    font-size: 0.82rem;
+    font-size: 0.86rem;
   }
   .plans {
     list-style: none;
@@ -63,26 +68,27 @@
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
   }
   li {
     display: flex;
     justify-content: space-between;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
-    background: var(--bg-glass);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    font-size: 0.86rem;
+    padding: 12px var(--space-2);
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.92rem;
   }
+  li:last-child { border-bottom: none; }
   .desc {
     color: var(--text-primary);
+    font-weight: 600;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   .parc {
-    color: var(--text-secondary);
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--text-muted);
     font-variant-numeric: tabular-nums;
   }
 </style>

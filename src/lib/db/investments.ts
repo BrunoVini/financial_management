@@ -1,5 +1,7 @@
 import type { Contribution, Currency, Holding, MonthKey, Snapshot, Store } from '../types';
 import { newId } from '../uuid';
+import { accruedMarketValue, hasYield } from './yieldEngine';
+import { annualizeDaily } from '../bcbRates';
 
 export type NewHolding = {
   name: string;
@@ -86,14 +88,36 @@ export function setHoldingCoinAmount(store: Store, holdingId: string, coinAmount
   };
 }
 
+export function setHoldingShareAmount(store: Store, holdingId: string, shareAmount: number): Store {
+  const holding = store.investments.holdings.find((h) => h.id === holdingId);
+  if (!holding || !holding.ticker) return store;
+  return {
+    ...store,
+    investments: {
+      ...store.investments,
+      holdings: store.investments.holdings.map((h) =>
+        h.id === holdingId ? { ...h, shareAmount } : h,
+      ),
+    },
+  };
+}
+
 export function holdingReturn(store: Store, holdingId: string): HoldingReturn {
-  const contributed = store.investments.contributions
-    .filter((c) => c.holdingId === holdingId)
-    .reduce((sum, c) => sum + c.amount, 0);
+  const holding = store.investments.holdings.find((h) => h.id === holdingId);
+  const myContribs = store.investments.contributions.filter((c) => c.holdingId === holdingId);
+  const contributed = myContribs.reduce((sum, c) => sum + c.amount, 0);
   const snapshots = store.investments.snapshots
     .filter((s) => s.holdingId === holdingId)
     .sort((a, b) => a.takenAt.localeCompare(b.takenAt));
-  const marketValue = snapshots.length ? snapshots[snapshots.length - 1].marketValue : contributed;
+  let marketValue: number;
+  if (snapshots.length) {
+    marketValue = snapshots[snapshots.length - 1].marketValue;
+  } else if (holding && hasYield(holding)) {
+    const annualCdi = store.bcbCache ? annualizeDaily(store.bcbCache.cdiDaily) : null;
+    marketValue = accruedMarketValue(holding, myContribs, annualCdi);
+  } else {
+    marketValue = contributed;
+  }
   const deltaAbsolute = marketValue - contributed;
   const deltaPercent = contributed > 0 ? (deltaAbsolute / contributed) * 100 : 0;
   return { contributed, marketValue, deltaAbsolute, deltaPercent };

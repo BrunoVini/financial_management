@@ -32,18 +32,23 @@
 
 <style>
   .picker {
-    background: var(--bg-raised);
+    background: var(--bg-glass);
     color: var(--text-primary);
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-lg);
+    padding: 8px var(--space-3);
     font: inherit;
+    font-weight: 600;
     cursor: pointer;
-    min-height: 36px;
+    min-height: 40px;
+    transition: border-color var(--motion-fast);
+  }
+  .picker:hover {
+    border-color: var(--text-muted);
   }
   .picker:focus-visible {
     outline: 2px solid var(--accent-primary);
-    outline-offset: 1px;
+    outline-offset: 2px;
   }
   .picker:disabled {
     opacity: 0.6;

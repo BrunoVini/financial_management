@@ -76,38 +76,44 @@
     gap: var(--space-2);
   }
   .label {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.86rem;
+    color: var(--text-muted);
   }
   .group {
     display: flex;
-    gap: var(--space-1);
+    gap: 0;
     align-items: stretch;
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    background: var(--bg-raised);
+    border-radius: var(--radius-lg);
+    background: var(--bg-glass);
     overflow: hidden;
+    transition: border-color var(--motion-fast), box-shadow var(--motion-fast);
+  }
+  .group:focus-within {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(124, 148, 116, 0.18);
   }
   .amount {
     flex: 1;
     background: transparent;
     border: none;
     color: var(--text-primary);
-    padding: var(--space-2) var(--space-3);
+    padding: 10px var(--space-4);
     font: inherit;
+    font-feature-settings: 'tnum';
     min-width: 0;
-    min-height: 36px;
+    min-height: 40px;
   }
   .amount:focus-visible {
-    outline: 2px solid var(--accent-primary);
-    outline-offset: -2px;
+    outline: none;
   }
   .group :global(.picker) {
     border: none;
     border-left: 1px solid var(--border-subtle);
     border-radius: 0;
     background: transparent;
+    min-height: 40px;
   }
 </style>

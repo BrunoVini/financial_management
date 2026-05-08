@@ -108,7 +108,8 @@
   .backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(46, 42, 38, 0.5);
+    backdrop-filter: blur(2px);
     border: none;
     z-index: 60;
     cursor: default;
@@ -120,26 +121,33 @@
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 2 * var(--space-4));
-    max-width: 520px;
+    max-width: 540px;
     background: var(--bg-raised);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-glass);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xxl);
+    box-shadow: 0 18px 48px rgba(46, 42, 38, 0.2);
     display: flex;
     flex-direction: column;
     max-height: 70vh;
     z-index: 61;
     animation: rise var(--motion-base) ease-out;
+    overflow: hidden;
   }
   input {
     background: transparent;
     border: none;
+    border-radius: 0;
     border-bottom: 1px solid var(--border-subtle);
     color: var(--text-primary);
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-4) var(--space-5);
     font: inherit;
-    min-height: 44px;
+    font-size: 1rem;
+    min-height: 52px;
     outline: none;
+  }
+  input:focus {
+    border-bottom-color: var(--accent-primary);
+    box-shadow: none;
   }
   ul {
     list-style: none;
@@ -156,11 +164,12 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-md);
+    padding: 10px var(--space-3);
+    border-radius: var(--radius-lg);
     cursor: pointer;
     text-align: left;
     font: inherit;
+    font-weight: 500;
   }
   .row.active {
     background: var(--bg-glass);
@@ -168,35 +177,31 @@
   }
   .empty {
     color: var(--text-muted);
+    font-family: var(--font-display);
+    font-style: italic;
     padding: var(--space-2) var(--space-3);
   }
   footer {
     border-top: 1px solid var(--border-subtle);
-    padding: var(--space-2) var(--space-3);
+    padding: 10px var(--space-4);
+    font-family: var(--font-display);
+    font-style: italic;
     color: var(--text-muted);
-    font-size: 0.78rem;
+    font-size: 0.82rem;
   }
   kbd {
     background: var(--bg-glass);
     border: 1px solid var(--border-subtle);
-    border-radius: 4px;
-    padding: 0 5px;
-    font-family: inherit;
+    border-radius: 6px;
+    padding: 1px 6px;
+    font-family: var(--font-body);
+    font-style: normal;
     font-size: 0.78em;
     margin: 0 2px;
   }
-  @keyframes fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   @keyframes rise {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -8px);
-    }
-    to {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
+    from { opacity: 0; transform: translate(-50%, -8px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
   }
 </style>

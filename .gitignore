@@ -15,6 +15,9 @@ dist-ssr
 # Superpowers brainstorm assets
 .superpowers/
 
+# Design exploration mockups (local-only)
+_design-explorations/
+
 # Claude Code project files
 .claude/
 

@@ -30,9 +30,9 @@
 <style>
   aside {
     width: 220px;
-    padding: var(--space-5) var(--space-4);
+    padding: var(--space-6) var(--space-3);
     border-right: 1px solid var(--border-subtle);
-    background: var(--bg-raised);
+    background: var(--bg-base);
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
@@ -40,19 +40,21 @@
   nav {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: 4px;
   }
   a {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius-md);
+    padding: 10px var(--space-4);
+    border-radius: var(--radius-pill);
     color: var(--text-secondary);
     text-decoration: none;
+    font-weight: 500;
     transition:
-      background var(--motion-fast),
-      color var(--motion-fast);
+      background var(--motion-base) ease,
+      color var(--motion-base) ease,
+      box-shadow var(--motion-base) ease;
   }
   a:hover {
     background: var(--bg-glass);
@@ -60,7 +62,8 @@
   }
   a.active {
     background: var(--accent-gradient);
-    color: white;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(124, 148, 116, 0.25);
   }
   @media (max-width: 768px) {
     aside {

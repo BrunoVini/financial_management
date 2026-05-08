@@ -68,18 +68,28 @@ export interface Month {
   closingBalances?: Record<Currency, number>;
 }
 
+export type YieldType = 'fixed' | 'cdi';
+
 export interface Holding {
   id: string;
   name: string;
   type: string;
   currency: Currency;
   createdAt: string;
-  // When set, the holding represents a crypto position. `coinId` is a
-  // CoinGecko id (e.g. 'bitcoin') used to look up live prices, and
-  // `coinAmount` is the quantity held in that coin's native unit.
-  // Auto-snapshots compute marketValue = coinAmount × price(coinId, currency).
+  // Crypto position. `coinId` is a CoinGecko id; `coinAmount` is the
+  // quantity held. Auto-snapshots compute marketValue = qty × price.
   coinId?: string;
   coinAmount?: number;
+  // Stock position (B3 via brapi.dev). `ticker` is the symbol (e.g.
+  // 'PETR4'); `shareAmount` is the number of shares held.
+  ticker?: string;
+  shareAmount?: number;
+  // Fixed-income yield. `yieldType='fixed'` means yieldRate is the
+  // annual rate as decimal (0.12 = 12% a.a.). `yieldType='cdi'` means
+  // yieldRate is the % of CDI (1 = 100% CDI). Accrual is compounded
+  // daily on each contribution from its date.
+  yieldType?: YieldType;
+  yieldRate?: number;
 }
 
 export interface Contribution {
@@ -153,6 +163,19 @@ export interface CryptoCache {
   prices: Record<string, Record<string, number>>;
 }
 
+export interface StockCache {
+  fetchedAt: string; // 'YYYY-MM-DD'
+  // prices[ticker] = last regularMarketPrice in the ticker's currency
+  // (BRL for B3 symbols). Tickers are uppercased.
+  prices: Record<string, number>;
+}
+
+export interface BcbCache {
+  fetchedAt: string; // 'YYYY-MM-DD'
+  // Latest daily CDI rate as decimal (e.g. 0.000534 for 0.0534%/day).
+  cdiDaily: number;
+}
+
 export interface Store {
   schemaVersion: 1;
   settings: Settings;
@@ -165,4 +188,6 @@ export interface Store {
   budgets: Record<string, number>;
   ratesCache: RatesCache | null;
   cryptoCache: CryptoCache | null;
+  stockCache: StockCache | null;
+  bcbCache: BcbCache | null;
 }

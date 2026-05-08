@@ -26,25 +26,33 @@
     display: inline-flex;
     align-items: baseline;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-3);
+    padding: 8px 14px;
     background: var(--bg-glass);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-pill);
     font-variant-numeric: tabular-nums;
+    transition: border-color var(--motion-fast);
+  }
+  .pill:hover {
+    border-color: var(--text-muted);
   }
   .code {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    color: var(--text-secondary);
-    text-transform: uppercase;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
   }
   .amount {
     font-size: 0.95rem;
+    font-weight: 600;
     color: var(--text-primary);
   }
   .conv {
-    font-size: 0.78rem;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.82rem;
     color: var(--text-muted);
   }
 </style>
