@@ -1,7 +1,9 @@
-name: Deploy to GitHub Pages
+name: CI / Deploy to GitHub Pages
 
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
   workflow_dispatch:
 
@@ -15,10 +17,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
+    outputs:
+      version_bumped: ${{ steps.check.outputs.bumped }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - uses: actions/setup-node@v4
         with:
@@ -30,6 +36,33 @@ jobs:
       - run: npm run lint
 
       - run: npm test
+
+      - id: check
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          current=$(node -p "require('./package.json').version")
+          git show HEAD~1:package.json > /tmp/prev-package.json 2>/dev/null || echo '{}' > /tmp/prev-package.json
+          previous=$(node -p "require('/tmp/prev-package.json').version || ''")
+          echo "Current: $current | Previous: $previous"
+          if [ "$current" != "$previous" ]; then
+            echo "bumped=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "bumped=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build:
+    needs: test
+    if: needs.test.outputs.version_bumped == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - run: npm ci
 
       - run: npm run build
         env:

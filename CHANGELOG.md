@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- CI/CD workflow (`.github/workflows/deploy.yml`): lint and tests now run on every push to `main` and on pull requests, but `build` + `deploy` to GitHub Pages only execute when `package.json` `version` changes between `HEAD` and `HEAD~1` (i.e., a version bump). `workflow_dispatch` still triggers a full deploy for manual releases.
+
 ## [1.0.0] - 2026-05-02
 
 First public release. Covers Phases 1-5: foundation, onboarding +
