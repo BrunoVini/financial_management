@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-05-07
+
+Maintenance release. Bug-fix sweep across the rates pipeline,
+account balances, month rollover and installment math, plus a
+CI tweak to deploy only on version bumps.
+
 ### Fixed
 
 - Rates provider switched from `api.frankfurter.app` to `open.er-api.com/v6/latest/EUR` (`src/lib/rates.ts`) because frankfurter responses started getting blocked by CORS in the browser, leaving the app unable to refresh quotes (Overview pills sat on stale/missing conversions). open.er-api.com is CORS-enabled, requires no API key, and exposes the same EUR-base shape; we filter the response down to the requested symbols. The exported constant was renamed `FRANKFURTER_URL` → `RATES_URL`.
@@ -179,5 +185,6 @@ investments + charts + polish, and recurring/budgets/filters/CSV.
 
 - Deprecated `hot` option from `vite-plugin-svelte` config (no longer accepted in v7).
 
-[Unreleased]: https://github.com/BrunoVini/financial_management/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/BrunoVini/financial_management/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/BrunoVini/financial_management/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/BrunoVini/financial_management/releases/tag/v1.0.0
