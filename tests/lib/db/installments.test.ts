@@ -3,6 +3,7 @@ import {
   addInstallmentPlan,
   removeInstallmentPlan,
   perInstallmentAmount,
+  installmentAmountAt,
   installmentMonth,
   installmentsPendingThrough,
   installmentsDueInMonth,
@@ -41,6 +42,35 @@ describe('addInstallmentPlan / perInstallmentAmount', () => {
     expect(plan.paidIndices).toEqual([]);
     expect(plan.createdAt).toBeTruthy();
     expect(perInstallmentAmount(plan)).toBeCloseTo(1234.56 / 6, 2);
+  });
+});
+
+describe('installmentAmountAt', () => {
+  it('absorbs the rounding residual into the last installment', () => {
+    // Given: a plan that does not divide evenly (100 BRL / 3 = 33.333...)
+    const { store: s0, accountId } = seedWithAccount();
+    const { store } = addInstallmentPlan(s0, {
+      description: 'Item',
+      totalAmount: 100,
+      installmentCount: 3,
+      currency: 'BRL',
+      accountId,
+      categoryId: 'cat',
+      firstMonthKey: '2026-05',
+    });
+    const plan = store.installments[0];
+
+    // When: each installment's exact amount is computed
+    const a0 = installmentAmountAt(plan, 0);
+    const a1 = installmentAmountAt(plan, 1);
+    const a2 = installmentAmountAt(plan, 2);
+
+    // Then: the first N-1 use the rounded base, the last absorbs the residual,
+    //       and the sum equals totalAmount to the cent.
+    expect(a0).toBe(33.33);
+    expect(a1).toBe(33.33);
+    expect(a2).toBe(33.34);
+    expect(a0 + a1 + a2).toBeCloseTo(100, 2);
   });
 });
 

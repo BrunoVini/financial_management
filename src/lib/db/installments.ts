@@ -26,9 +26,28 @@ export function removeInstallmentPlan(store: Store, id: string): Store {
   return { ...store, installments: store.installments.filter((p) => p.id !== id) };
 }
 
+/**
+ * Display value of a "typical" installment (rounded to 2 decimals). Use
+ * this for UI summaries; for actual per-installment debits and totals
+ * call `installmentAmountAt(plan, index)` so the last installment
+ * absorbs the rounding residual and the sum equals `totalAmount`.
+ */
 export function perInstallmentAmount(plan: InstallmentPlan): number {
   if (plan.installmentCount <= 0) return 0;
   return Math.round((plan.totalAmount / plan.installmentCount) * 100) / 100;
+}
+
+/**
+ * Exact amount for the installment at `index`. Indices [0..count-2] use
+ * the rounded base; the last index absorbs the residual so the sum of
+ * all installments equals `plan.totalAmount` to the cent.
+ */
+export function installmentAmountAt(plan: InstallmentPlan, index: number): number {
+  if (plan.installmentCount <= 0) return 0;
+  const base = perInstallmentAmount(plan);
+  if (index < plan.installmentCount - 1) return base;
+  const residual = plan.totalAmount - base * (plan.installmentCount - 1);
+  return Math.round(residual * 100) / 100;
 }
 
 export function installmentMonth(plan: InstallmentPlan, index: number): MonthKey {
@@ -54,12 +73,11 @@ export function installmentsPendingThrough(
 ): PendingInstallment[] {
   const out: PendingInstallment[] = [];
   for (const plan of store.installments) {
-    const amount = perInstallmentAmount(plan);
     for (let i = 0; i < plan.installmentCount; i += 1) {
       if (plan.paidIndices.includes(i)) continue;
       const due = installmentMonth(plan, i);
       if (due > monthKey) continue;
-      out.push({ plan, index: i, monthKey: due, amount });
+      out.push({ plan, index: i, monthKey: due, amount: installmentAmountAt(plan, i) });
     }
   }
   return out.sort((a, b) => a.monthKey.localeCompare(b.monthKey));
@@ -84,10 +102,14 @@ export function totalUpcomingDebt(
 ): number {
   let sum = 0;
   for (const plan of store.installments) {
-    const amount = perInstallmentAmount(plan);
     for (let i = 0; i < plan.installmentCount; i += 1) {
       if (plan.paidIndices.includes(i)) continue;
-      const v = convert(amount, plan.currency, displayCurrency, ratesEurBase);
+      const v = convert(
+        installmentAmountAt(plan, i),
+        plan.currency,
+        displayCurrency,
+        ratesEurBase,
+      );
       if (Number.isFinite(v)) sum += v;
     }
   }
@@ -110,7 +132,7 @@ export function payInstallment(
   if (plan.paidIndices.includes(index)) return store;
   const monthKey = installmentMonth(plan, index);
   if (!store.months[monthKey]) return store;
-  const amount = perInstallmentAmount(plan);
+  const amount = installmentAmountAt(plan, index);
   const note = `${plan.description} (${index + 1}/${plan.installmentCount})`;
   let next = addExpense(store, monthKey, {
     amount,
