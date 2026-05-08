@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ensureRates, todayIso, FRANKFURTER_URL } from '@/lib/rates';
-import { defaultStore, saveStore, loadStore } from '@/lib/storage';
+import type { RatesCache } from '@/lib/types';
 
 describe('rates', () => {
   beforeEach(() => {
@@ -27,44 +27,42 @@ describe('rates', () => {
     vi.unstubAllGlobals();
   });
 
-  it('fetches and caches when cache is empty', async () => {
-    // Given: a fresh store with no rates cache
-    const store = defaultStore();
-    saveStore(store);
-
+  it('fetches and returns a cache to persist when current cache is empty', async () => {
+    // Given: no current cache
     // When: ensureRates is called for the active currencies
-    const result = await ensureRates(['BRL', 'USD', 'CAD']);
+    const result = await ensureRates(['BRL', 'USD', 'CAD'], null);
 
-    // Then: rates are returned, the cache is populated, and exactly one network call was made
+    // Then: rates are returned, a fresh cache is emitted for the caller to persist,
+    //       and exactly one network call was made
     expect(result.rates.BRL).toBe(5.5);
-    expect(loadStore().ratesCache?.fetchedAt).toBe(todayIso());
+    expect(result.cache?.fetchedAt).toBe(todayIso());
+    expect(result.cache?.rates.BRL).toBe(5.5);
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
   });
 
-  it('skips network when cache fetchedAt is today', async () => {
+  it('skips network and emits no cache when current cache fetchedAt is today', async () => {
     // Given: a cache already stamped with today's date
-    const store = defaultStore();
-    store.ratesCache = { fetchedAt: todayIso(), base: 'EUR', rates: { BRL: 5.5 } };
-    saveStore(store);
+    const cache: RatesCache = { fetchedAt: todayIso(), base: 'EUR', rates: { BRL: 5.5 } };
 
     // When: ensureRates is called
-    await ensureRates(['BRL']);
+    const result = await ensureRates(['BRL'], cache);
 
-    // Then: no fetch happens — cached rates serve the request
+    // Then: no fetch happens — cached rates serve the request, no new cache to persist
     expect(globalThis.fetch).not.toHaveBeenCalled();
+    expect(result.cache).toBeNull();
+    expect(result.rates.BRL).toBe(5.5);
   });
 
   it('refetches when cache is from a previous day', async () => {
     // Given: a cache from yesterday
-    const store = defaultStore();
-    store.ratesCache = { fetchedAt: '2026-05-01', base: 'EUR', rates: { BRL: 5.0 } };
-    saveStore(store);
+    const cache: RatesCache = { fetchedAt: '2026-05-01', base: 'EUR', rates: { BRL: 5.0 } };
 
     // When: ensureRates is called today
-    await ensureRates(['BRL', 'USD', 'CAD']);
+    const result = await ensureRates(['BRL', 'USD', 'CAD'], cache);
 
-    // Then: a fresh fetch is triggered
+    // Then: a fresh fetch is triggered and a new cache is emitted
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
+    expect(result.cache?.fetchedAt).toBe(todayIso());
   });
 
   it('falls back to stale cache on fetch error', async () => {
@@ -75,28 +73,37 @@ describe('rates', () => {
         throw new Error('network');
       }),
     );
-    const store = defaultStore();
-    store.ratesCache = { fetchedAt: '2026-04-01', base: 'EUR', rates: { BRL: 5.0 } };
-    saveStore(store);
+    const cache: RatesCache = { fetchedAt: '2026-04-01', base: 'EUR', rates: { BRL: 5.0 } };
 
     // When: ensureRates is called
-    const result = await ensureRates(['BRL']);
+    const result = await ensureRates(['BRL'], cache);
 
-    // Then: the stale rates are returned with stale=true (caller can warn the user)
+    // Then: the stale rates are returned with stale=true, no new cache to persist
     expect(result.rates.BRL).toBe(5.0);
     expect(result.stale).toBe(true);
+    expect(result.cache).toBeNull();
   });
 
   it('builds the frankfurter URL with the requested symbols', async () => {
-    // Given: a fresh store
-    saveStore(defaultStore());
-
-    // When: ensureRates is called with a specific list
-    await ensureRates(['BRL', 'USD']);
+    // When: ensureRates is called with a specific list and no cache
+    await ensureRates(['BRL', 'USD'], null);
 
     // Then: the URL contains base=EUR and the comma-joined symbols
     expect(globalThis.fetch).toHaveBeenCalledWith(
       expect.stringContaining(`${FRANKFURTER_URL}?from=EUR&to=BRL,USD`),
     );
+  });
+
+  it('throws when network fails and no cache is available', async () => {
+    // Given: no cache and a failing network
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new Error('network');
+      }),
+    );
+
+    // When/Then: ensureRates surfaces the error
+    await expect(ensureRates(['BRL'], null)).rejects.toThrow('rates unavailable');
   });
 });

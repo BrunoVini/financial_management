@@ -1,5 +1,4 @@
 import type { Currency, RatesCache } from './types';
-import { loadStore, saveStore } from './storage';
 
 export const FRANKFURTER_URL = 'https://api.frankfurter.app/latest';
 
@@ -7,6 +6,8 @@ export interface RatesResult {
   rates: Record<Currency, number>;
   fetchedAt: string;
   stale: boolean;
+  /** New cache the caller should persist (via appStore mutate). Null when unchanged. */
+  cache: RatesCache | null;
 }
 
 export function todayIso(): string {
@@ -21,25 +22,30 @@ async function fetchRates(symbols: Currency[]): Promise<RatesCache> {
   return { fetchedAt: todayIso(), base: 'EUR', rates: { EUR: 1, ...json.rates } };
 }
 
-export async function ensureRates(symbols: Currency[]): Promise<RatesResult> {
-  const store = loadStore();
-  const cache = store.ratesCache;
-  if (cache && cache.fetchedAt === todayIso()) {
-    return { rates: cache.rates, fetchedAt: cache.fetchedAt, stale: false };
+export async function ensureRates(
+  symbols: Currency[],
+  currentCache: RatesCache | null,
+): Promise<RatesResult> {
+  if (currentCache && currentCache.fetchedAt === todayIso()) {
+    return {
+      rates: currentCache.rates,
+      fetchedAt: currentCache.fetchedAt,
+      stale: false,
+      cache: null,
+    };
   }
   try {
     const fresh = await fetchRates(symbols);
-    store.ratesCache = fresh;
-    saveStore(store);
-    return { rates: fresh.rates, fetchedAt: fresh.fetchedAt, stale: false };
+    return { rates: fresh.rates, fetchedAt: fresh.fetchedAt, stale: false, cache: fresh };
   } catch {
-    if (cache) return { rates: cache.rates, fetchedAt: cache.fetchedAt, stale: true };
+    if (currentCache) {
+      return {
+        rates: currentCache.rates,
+        fetchedAt: currentCache.fetchedAt,
+        stale: true,
+        cache: null,
+      };
+    }
     throw new Error('rates unavailable and no cache');
   }
-}
-
-export function clearRatesCache(): void {
-  const store = loadStore();
-  store.ratesCache = null;
-  saveStore(store);
 }

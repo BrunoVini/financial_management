@@ -11,7 +11,7 @@
   import { theme, applyThemeToDocument } from '@/theme';
   import { onMount } from 'svelte';
   import { push, router } from 'svelte-spa-router';
-  import { settings, mutate } from '@/lib/appStore';
+  import { appStore, settings, mutate } from '@/lib/appStore';
   import { get } from 'svelte/store';
   import { ensureRates } from '@/lib/rates';
   import { rolloverIfNeeded, monthKey as toMonthKey } from '@/lib/db/months';
@@ -42,8 +42,12 @@
   async function bootRates(symbols: string[]) {
     if (symbols.length === 0) return;
     try {
-      const result = await ensureRates(symbols);
+      const result = await ensureRates(symbols, get(appStore).ratesCache);
       ratesStale = result.stale;
+      if (result.cache) {
+        const fresh = result.cache;
+        mutate((store) => ({ ...store, ratesCache: fresh }));
+      }
     } catch {
       ratesStale = true;
     }

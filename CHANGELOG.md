@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Rates fetch now flows through `appStore` (`src/lib/rates.ts` + `src/App.svelte`): `ensureRates(symbols, currentCache)` is a pure async fetcher returning `{ rates, fetchedAt, stale, cache }`; the caller persists `cache` via `mutate(...)`. This fixes two bugs: (1) UI used to read `$appStore.ratesCache` which stayed `null` after `ensureRates` wrote directly to `localStorage`, forcing a page reload to see converted values; (2) the previous `loadStore()` → `await fetch` → `saveStore()` sequence could overwrite a concurrent expense write performed during the in-flight fetch, causing silent data loss. Removed unused `clearRatesCache()` helper.
+
 ### Changed
 
 - CI/CD workflow (`.github/workflows/deploy.yml`): lint and tests now run on every push to `main` and on pull requests, but `build` + `deploy` to GitHub Pages only execute when `package.json` `version` changes between `HEAD` and `HEAD~1` (i.e., a version bump). `workflow_dispatch` still triggers a full deploy for manual releases.
