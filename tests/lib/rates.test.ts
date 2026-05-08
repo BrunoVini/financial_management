@@ -1,6 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ensureRates, todayIso, FRANKFURTER_URL } from '@/lib/rates';
+import { ensureRates, todayIso, RATES_URL } from '@/lib/rates';
 import type { RatesCache } from '@/lib/types';
+
+function okResponse(rates: Record<string, number>): Response {
+  return new Response(
+    JSON.stringify({
+      result: 'success',
+      base_code: 'EUR',
+      rates,
+    }),
+    { status: 200 },
+  );
+}
 
 describe('rates', () => {
   beforeEach(() => {
@@ -8,17 +19,7 @@ describe('rates', () => {
     vi.setSystemTime(new Date('2026-05-02T12:00:00Z'));
     vi.stubGlobal(
       'fetch',
-      vi.fn(
-        async () =>
-          new Response(
-            JSON.stringify({
-              base: 'EUR',
-              date: '2026-05-02',
-              rates: { BRL: 5.5, USD: 1.1, CAD: 1.5 },
-            }),
-            { status: 200 },
-          ),
-      ),
+      vi.fn(async () => okResponse({ EUR: 1, BRL: 5.5, USD: 1.1, CAD: 1.5, JPY: 165 })),
     );
   });
 
@@ -27,16 +28,17 @@ describe('rates', () => {
     vi.unstubAllGlobals();
   });
 
-  it('fetches and returns a cache to persist when current cache is empty', async () => {
+  it('fetches and returns a cache filtered to requested symbols', async () => {
     // Given: no current cache
-    // When: ensureRates is called for the active currencies
+    // When: ensureRates is called for BRL/USD/CAD
     const result = await ensureRates(['BRL', 'USD', 'CAD'], null);
 
-    // Then: rates are returned, a fresh cache is emitted for the caller to persist,
-    //       and exactly one network call was made
+    // Then: only requested symbols (plus EUR base) are kept; one network call
     expect(result.rates.BRL).toBe(5.5);
+    expect(result.rates.USD).toBe(1.1);
     expect(result.cache?.fetchedAt).toBe(todayIso());
-    expect(result.cache?.rates.BRL).toBe(5.5);
+    expect(result.cache?.rates.JPY).toBeUndefined();
+    expect(result.cache?.rates.EUR).toBe(1);
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
   });
 
@@ -66,7 +68,7 @@ describe('rates', () => {
   });
 
   it('falls back to stale cache on fetch error', async () => {
-    // Given: a stale cache and a network that will throw
+    // Given: a stale cache and a network that will throw (simulates CORS / offline)
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => {
@@ -84,14 +86,12 @@ describe('rates', () => {
     expect(result.cache).toBeNull();
   });
 
-  it('builds the frankfurter URL with the requested symbols', async () => {
-    // When: ensureRates is called with a specific list and no cache
+  it('hits the open.er-api EUR-base endpoint', async () => {
+    // When: ensureRates is called
     await ensureRates(['BRL', 'USD'], null);
 
-    // Then: the URL contains base=EUR and the comma-joined symbols
-    expect(globalThis.fetch).toHaveBeenCalledWith(
-      expect.stringContaining(`${FRANKFURTER_URL}?from=EUR&to=BRL,USD`),
-    );
+    // Then: the request goes to the configured URL
+    expect(globalThis.fetch).toHaveBeenCalledWith(RATES_URL);
   });
 
   it('throws when network fails and no cache is available', async () => {
@@ -105,5 +105,22 @@ describe('rates', () => {
 
     // When/Then: ensureRates surfaces the error
     await expect(ensureRates(['BRL'], null)).rejects.toThrow('rates unavailable');
+  });
+
+  it('rejects responses with result != success', async () => {
+    // Given: provider returns an error envelope
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({ result: 'error', 'error-type': 'unsupported-code' }),
+            { status: 200 },
+          ),
+      ),
+    );
+
+    // When/Then: ensureRates throws (treated as fetch failure)
+    await expect(ensureRates(['BRL'], null)).rejects.toThrow();
   });
 });
