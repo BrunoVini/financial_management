@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Crypto holding foundation. `Holding` gained two optional fields — `coinId` (CoinGecko id, e.g. `'bitcoin'`) and `coinAmount` (quantity in the coin's native unit) — and `Store` gained `cryptoCache: CryptoCache | null` for daily-cached coin prices keyed by `coinId` and lower-cased fiat code. Soft migration backfills `cryptoCache: null` on stores from earlier patches. New `src/lib/cryptoPrices.ts` mirrors the rates module: `ensureCryptoPrices(coinIds, currencies, currentCache)` is a pure async fetcher hitting CoinGecko's `simple/price` endpoint, returns `{ prices, fetchedAt, stale, cache }`, merges with same-day cache so previously fetched pairs aren't dropped, and falls back to a stale cache on network failure. `priceOf(cache, coinId, currency)` is a case-insensitive lookup helper. `setHoldingCoinAmount(store, id, amount)` updates the held quantity (no-op for non-crypto holdings). 11 G/W/T tests.
+
 ## [1.1.0] - 2026-05-07
 
 Maintenance release. Bug-fix sweep across the rates pipeline,

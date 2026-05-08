@@ -5,6 +5,7 @@ import {
   addContribution,
   addSnapshot,
   holdingReturn,
+  setHoldingCoinAmount,
 } from '@/lib/db/investments';
 import { defaultStore } from '@/lib/storage';
 
@@ -23,6 +24,48 @@ describe('addHolding', () => {
     expect(store.investments.holdings).toHaveLength(1);
     expect(id).toBeTruthy();
     expect(store.investments.holdings[0].createdAt).toBeTruthy();
+  });
+
+  it('persists optional crypto fields when provided', () => {
+    // Given/When: adding a BTC holding
+    const s = addHolding(defaultStore(), {
+      name: 'Bitcoin',
+      type: 'Crypto',
+      currency: 'BRL',
+      coinId: 'bitcoin',
+      coinAmount: 0.25,
+    });
+    const h = s.investments.holdings[0];
+    // Then: coinId / coinAmount round-trip
+    expect(h.coinId).toBe('bitcoin');
+    expect(h.coinAmount).toBe(0.25);
+  });
+});
+
+describe('setHoldingCoinAmount', () => {
+  it('updates coinAmount on a crypto holding', () => {
+    // Given: a BTC holding with 0.1 BTC
+    let s = addHolding(defaultStore(), {
+      name: 'Bitcoin',
+      type: 'Crypto',
+      currency: 'BRL',
+      coinId: 'bitcoin',
+      coinAmount: 0.1,
+    });
+    const id = s.investments.holdings[0].id;
+    // When: bumping to 0.5
+    s = setHoldingCoinAmount(s, id, 0.5);
+    // Then: the holding reflects the new quantity
+    expect(s.investments.holdings[0].coinAmount).toBe(0.5);
+  });
+
+  it('is a no-op for non-crypto holdings (no coinId)', () => {
+    // Given: a stocks holding without coinId
+    const { store, id } = seedHolding();
+    // When: trying to set a coin amount
+    const s2 = setHoldingCoinAmount(store, id, 1);
+    // Then: nothing changes
+    expect(s2.investments.holdings[0].coinAmount).toBeUndefined();
   });
 });
 

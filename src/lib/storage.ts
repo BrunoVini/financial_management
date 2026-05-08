@@ -23,6 +23,7 @@ export function defaultStore(): Store {
     subscriptions: [],
     budgets: {},
     ratesCache: null,
+    cryptoCache: null,
   };
 }
 
@@ -43,6 +44,7 @@ export function loadStore(): Store {
   if (!Array.isArray(store.installments)) store.installments = [];
   if (!Array.isArray(store.subscriptions)) store.subscriptions = [];
   if (!store.budgets || typeof store.budgets !== 'object') store.budgets = {};
+  if (store.cryptoCache === undefined) store.cryptoCache = null;
   return store;
 }
 

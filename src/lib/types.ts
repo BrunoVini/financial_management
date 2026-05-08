@@ -74,6 +74,12 @@ export interface Holding {
   type: string;
   currency: Currency;
   createdAt: string;
+  // When set, the holding represents a crypto position. `coinId` is a
+  // CoinGecko id (e.g. 'bitcoin') used to look up live prices, and
+  // `coinAmount` is the quantity held in that coin's native unit.
+  // Auto-snapshots compute marketValue = coinAmount × price(coinId, currency).
+  coinId?: string;
+  coinAmount?: number;
 }
 
 export interface Contribution {
@@ -140,6 +146,13 @@ export interface RatesCache {
   rates: Record<Currency, number>;
 }
 
+export interface CryptoCache {
+  fetchedAt: string; // 'YYYY-MM-DD'
+  // prices[coinId][currencyCode] = price of 1 coin in that fiat currency.
+  // Currency codes are lowercased to match CoinGecko's API (e.g. 'brl').
+  prices: Record<string, Record<string, number>>;
+}
+
 export interface Store {
   schemaVersion: 1;
   settings: Settings;
@@ -151,4 +164,5 @@ export interface Store {
   subscriptions: Subscription[];
   budgets: Record<string, number>;
   ratesCache: RatesCache | null;
+  cryptoCache: CryptoCache | null;
 }

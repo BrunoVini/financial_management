@@ -1,7 +1,13 @@
 import type { Contribution, Currency, Holding, MonthKey, Snapshot, Store } from '../types';
 import { newId } from '../uuid';
 
-export type NewHolding = { name: string; type: string; currency: Currency };
+export type NewHolding = {
+  name: string;
+  type: string;
+  currency: Currency;
+  coinId?: string;
+  coinAmount?: number;
+};
 export type NewContribution = {
   holdingId: string;
   monthKey: MonthKey;
@@ -60,6 +66,24 @@ export interface HoldingReturn {
   marketValue: number;
   deltaAbsolute: number;
   deltaPercent: number;
+}
+
+/**
+ * Update the held quantity of a crypto holding. No-op when the holding
+ * is missing or not a crypto position (no `coinId`).
+ */
+export function setHoldingCoinAmount(store: Store, holdingId: string, coinAmount: number): Store {
+  const holding = store.investments.holdings.find((h) => h.id === holdingId);
+  if (!holding || !holding.coinId) return store;
+  return {
+    ...store,
+    investments: {
+      ...store.investments,
+      holdings: store.investments.holdings.map((h) =>
+        h.id === holdingId ? { ...h, coinAmount } : h,
+      ),
+    },
+  };
 }
 
 export function holdingReturn(store: Store, holdingId: string): HoldingReturn {
