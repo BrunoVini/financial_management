@@ -17,11 +17,15 @@ const PALETTE = [
 const EXPENSE_NAMES: Record<Language, string[]> = {
   'pt-BR': ['Mercado', 'Aluguel', 'Transporte', 'Lazer', 'Saúde', 'Contas', 'Restaurantes', 'Outros'],
   en: ['Groceries', 'Rent', 'Transport', 'Leisure', 'Health', 'Bills', 'Restaurants', 'Other'],
+  fr: ['Courses', 'Loyer', 'Transport', 'Loisirs', 'Santé', 'Factures', 'Restaurants', 'Autres'],
+  es: ['Mercado', 'Alquiler', 'Transporte', 'Ocio', 'Salud', 'Cuentas', 'Restaurantes', 'Otros'],
 };
 
 const INVESTMENT_NAMES: Record<Language, string[]> = {
   'pt-BR': ['Renda Fixa', 'Ações', 'FIIs', 'Cripto', 'Tesouro Direto'],
   en: ['Fixed Income', 'Stocks', 'REITs', 'Crypto', 'Government Bonds'],
+  fr: ['Revenu fixe', 'Actions', 'SCPI', 'Crypto', 'Obligations'],
+  es: ['Renta fija', 'Acciones', 'REITs', 'Cripto', 'Bonos del Estado'],
 };
 
 function build(names: string[]): Category[] {

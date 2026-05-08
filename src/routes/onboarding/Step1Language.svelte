@@ -35,26 +35,18 @@
     <section>
       <h4>{$t('onboarding.language')}</h4>
       <div class="radios">
-        <label>
-          <input
-            type="radio"
-            name="lang"
-            value="pt-BR"
-            checked={$wizard.language === 'pt-BR'}
-            onchange={() => setLanguage('pt-BR')}
-          />
-          Português (Brasil)
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="lang"
-            value="en"
-            checked={$wizard.language === 'en'}
-            onchange={() => setLanguage('en')}
-          />
-          English
-        </label>
+        {#each [{ code: 'pt-BR', label: 'Português (Brasil)' }, { code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }, { code: 'es', label: 'Español' }] as opt (opt.code)}
+          <label>
+            <input
+              type="radio"
+              name="lang"
+              value={opt.code}
+              checked={$wizard.language === opt.code}
+              onchange={() => setLanguage(opt.code as Language)}
+            />
+            {opt.label}
+          </label>
+        {/each}
       </div>
     </section>
 

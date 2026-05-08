@@ -9,7 +9,13 @@
 
   let open = $state(false);
   let typed = $state('');
-  let confirmWord = $derived($locale === 'pt-BR' ? 'EXCLUIR' : 'ERASE');
+  const CONFIRM_WORDS: Record<string, string> = {
+    'pt-BR': 'EXCLUIR',
+    en: 'ERASE',
+    fr: 'SUPPRIMER',
+    es: 'BORRAR',
+  };
+  let confirmWord = $derived(CONFIRM_WORDS[$locale] ?? 'ERASE');
   let canConfirm = $derived(typed.trim().toUpperCase() === confirmWord);
 
   function openModal() {

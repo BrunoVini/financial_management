@@ -16,6 +16,8 @@ export function convert(
 const LOCALE_BY_LANG: Record<Language, string> = {
   'pt-BR': 'pt-BR',
   en: 'en-US',
+  fr: 'fr-FR',
+  es: 'es-ES',
 };
 
 export function formatMoney(amount: number, currency: Currency, language: Language): string {

@@ -1,6 +1,6 @@
 export type Currency = string; // ISO 4217, e.g. 'BRL' | 'USD' | 'CAD'
 export type MonthKey = string; // 'YYYY-MM'
-export type Language = 'pt-BR' | 'en';
+export type Language = 'pt-BR' | 'en' | 'fr' | 'es';
 export type ThemeName = 'dark' | 'light';
 export type MonthStatus = 'open' | 'grace' | 'closed';
 

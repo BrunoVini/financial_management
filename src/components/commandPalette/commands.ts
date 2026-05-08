@@ -16,7 +16,7 @@ import {
 } from 'lucide-svelte';
 import { mutate } from '@/lib/appStore';
 import { openTransactionModal, type TransactionModalKind } from '@/lib/uiStore';
-import { setLocale } from '@/i18n';
+import { setLocale, SUPPORTED_LANGUAGES } from '@/i18n';
 import { setTheme, applyThemeToDocument } from '@/theme';
 import type { Settings } from '@/lib/types';
 import type { Palette } from '@/theme';
@@ -34,8 +34,20 @@ function tx(kind: Exclude<TransactionModalKind, null>) {
   return () => openTransactionModal(kind);
 }
 
+const LANG_LABELS: Record<string, string> = {
+  'pt-BR': 'Português',
+  en: 'English',
+  fr: 'Français',
+  es: 'Español',
+};
+
+function nextLanguage(current: Settings['language']): Settings['language'] {
+  const i = SUPPORTED_LANGUAGES.indexOf(current);
+  return SUPPORTED_LANGUAGES[(i + 1) % SUPPORTED_LANGUAGES.length];
+}
+
 function flipLanguage(settings: Settings) {
-  const next = settings.language === 'pt-BR' ? 'en' : 'pt-BR';
+  const next = nextLanguage(settings.language);
   mutate((s) => ({ ...s, settings: { ...s.settings, language: next } }));
   setLocale(next);
 }
@@ -95,7 +107,7 @@ export function buildCommands(t: T, settings: Settings, palette: Palette): Cmd[]
     },
     {
       id: 'cfg-lang',
-      label: settings.language === 'pt-BR' ? 'English' : 'Português',
+      label: `${t('settings.language')}: ${LANG_LABELS[nextLanguage(settings.language)]}`,
       icon: Languages,
       run: () => flipLanguage(settings),
     },

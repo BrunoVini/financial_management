@@ -22,6 +22,8 @@
       <select value={$settings.language} onchange={changeLanguage}>
         <option value="pt-BR">Português</option>
         <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="es">Español</option>
       </select>
     </label>
     <label>
