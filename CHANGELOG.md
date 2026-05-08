@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-05-08
+
+Major release. Pastoral theme + compositional rewrite of every
+route, real rentabilidade for B3 stocks (via brapi.dev) and
+fixed-income holdings (pré-fixada + % CDI from BCB SGS-12),
+French and Spanish locales, dark-theme dropdown legibility fix,
+and the full onboarding/settings currency-and-language picker
+overhaul. Schema is back-compatible — earlier stores soft-migrate
+their new optional fields to `null`.
+
 ### Fixed
 
 - Native `<select>` option popups in dark theme were rendering with a white background and grey text, leaving options unreadable. Added `color-scheme: light` on `:root` and `color-scheme: dark` under `[data-theme='dark']` so browsers theme native popups (selects, date pickers, scrollbars) automatically, plus an explicit `option { background: var(--bg-raised); color: var(--text-primary) }` fallback for engines that don't fully honor `color-scheme` on the popup. Onboarding dropdowns, Settings selects, and every modal `<select>` are all covered by the global rule.
