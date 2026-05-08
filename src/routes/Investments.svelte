@@ -5,13 +5,15 @@
   import HoldingCard from './investments/HoldingCard.svelte';
   import ContributionModal from './investments/ContributionModal.svelte';
   import SnapshotModal from './investments/SnapshotModal.svelte';
+  import NewHoldingModal from './investments/NewHoldingModal.svelte';
   import { appStore, settings } from '@/lib/appStore';
   import { investmentSeries } from '@/lib/charts/investmentSeries';
   import { formatMoney } from '@/lib/money';
-  import { Plus, Camera } from 'lucide-svelte';
+  import { Plus, Camera, Wallet } from 'lucide-svelte';
 
   let contribOpen = $state(false);
   let snapOpen = $state(false);
+  let newHoldingOpen = $state(false);
   let presetHoldingId = $state<string | undefined>(undefined);
 
   function openContribute(id?: string) {
@@ -72,6 +74,9 @@
   <header class="page-head">
     <h1>{$t('nav.investments')}</h1>
     <div class="quick">
+      <button type="button" onclick={() => (newHoldingOpen = true)}>
+        <Wallet size={16} /> {$t('inv.add.button')}
+      </button>
       <button type="button" onclick={() => openContribute()}>
         <Plus size={16} /> {$t('inv.contribute.button')}
       </button>
@@ -106,6 +111,7 @@
 
 <ContributionModal open={contribOpen} onclose={closeAll} {presetHoldingId} />
 <SnapshotModal open={snapOpen} onclose={closeAll} {presetHoldingId} />
+<NewHoldingModal open={newHoldingOpen} onclose={() => (newHoldingOpen = false)} />
 
 <style>
   .page {

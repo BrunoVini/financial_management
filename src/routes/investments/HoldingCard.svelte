@@ -3,10 +3,12 @@
   import Chart from '@/components/Chart.svelte';
   import { t } from '@/i18n';
   import { formatMoney, convert } from '@/lib/money';
-  import { appStore, settings } from '@/lib/appStore';
-  import { holdingReturn } from '@/lib/db/investments';
+  import { appStore, settings, mutate } from '@/lib/appStore';
+  import { addSnapshot, holdingReturn } from '@/lib/db/investments';
   import { holdingSparkline } from '@/lib/charts/investmentSeries';
-  import { Plus, Camera } from 'lucide-svelte';
+  import { refreshCryptoSnapshot } from '@/lib/db/cryptoActions';
+  import CoinAmountLine from './CoinAmountLine.svelte';
+  import { Plus, Camera, RefreshCw } from 'lucide-svelte';
   import type { Holding } from '@/lib/types';
 
   interface Props {
@@ -16,6 +18,21 @@
   }
 
   let { holding, onContribute, onSnapshot }: Props = $props();
+  let refreshing = $state(false);
+  let refreshError = $state<string | null>(null);
+
+  async function refreshPrice() {
+    refreshing = true;
+    refreshError = null;
+    const result = await refreshCryptoSnapshot(holding, $appStore.cryptoCache);
+    if (result.cache) {
+      const fresh = result.cache;
+      mutate((s) => ({ ...s, cryptoCache: fresh }));
+    }
+    if (result.snapshot) mutate((s) => addSnapshot(s, result.snapshot!));
+    if (result.errorKey) refreshError = $t(result.errorKey);
+    refreshing = false;
+  }
 
   let summary = $derived(holdingReturn($appStore, holding.id));
   let series = $derived(holdingSparkline($appStore, holding.id));
@@ -52,6 +69,7 @@
     <div class="title">
       <h3>{holding.name}</h3>
       <span class="type">{holding.type}</span>
+      {#if holding.coinId}<CoinAmountLine {holding} />{/if}
     </div>
     <div class="value">
       <strong>{formatMoney(summary.marketValue, holding.currency, $settings.language)}</strong>
@@ -83,10 +101,17 @@
     <button type="button" onclick={onContribute}>
       <Plus size={14} /> {$t('inv.contribute.button')}
     </button>
-    <button type="button" onclick={onSnapshot}>
-      <Camera size={14} /> {$t('inv.snapshot.button')}
-    </button>
+    {#if holding.coinId}
+      <button type="button" onclick={refreshPrice} disabled={refreshing}>
+        <RefreshCw size={14} /> {$t('inv.crypto.refresh')}
+      </button>
+    {:else}
+      <button type="button" onclick={onSnapshot}>
+        <Camera size={14} /> {$t('inv.snapshot.button')}
+      </button>
+    {/if}
   </div>
+  {#if refreshError}<p class="error" role="alert">{refreshError}</p>{/if}
 </Card>
 
 <style>
@@ -107,6 +132,11 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--text-muted);
+  }
+  .error {
+    color: var(--negative);
+    font-size: 0.78rem;
+    margin: var(--space-2) 0 0;
   }
   .value {
     text-align: right;
