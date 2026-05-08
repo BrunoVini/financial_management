@@ -1,7 +1,8 @@
 <script lang="ts">
   import { t, setLocale } from '@/i18n';
   import Card from '@/components/Card.svelte';
-  import CurrencyPicker from '@/components/CurrencyPicker.svelte';
+  import CurrencyDropdown from '@/components/CurrencyDropdown.svelte';
+  import { DEFAULT_CURRENCY_OPTIONS } from '@/components/currencyOptions';
   import LanguageDropdown from '@/components/LanguageDropdown.svelte';
   import { wizard, SUPPORTED_CURRENCIES } from './state';
   import type { Currency, Language } from '@/lib/types';
@@ -50,29 +51,34 @@
     <section>
       <h4>{$t('onboarding.displayCurrency')}</h4>
       <p class="help">{$t('onboarding.displayCurrency.help')}</p>
-      <CurrencyPicker
+      <CurrencyDropdown
         value={$wizard.displayCurrency}
-        options={SUPPORTED_CURRENCIES}
         onchange={(c) => setDisplayCurrency(c)}
+        ariaLabel={$t('onboarding.displayCurrency')}
       />
     </section>
 
     <section>
       <h4>{$t('onboarding.activeCurrencies')}</h4>
       <p class="help">{$t('onboarding.activeCurrencies.help')}</p>
-      <div class="checks">
+      <div class="badges" role="group" aria-label={$t('onboarding.activeCurrencies')}>
         {#each SUPPORTED_CURRENCIES as c (c)}
           {@const isDisplay = c === $wizard.displayCurrency}
-          <label class:locked={isDisplay}>
-            <input
-              type="checkbox"
-              checked={$wizard.activeCurrencies.includes(c)}
-              disabled={isDisplay}
-              onchange={() => toggleCurrency(c)}
-            />
-            {c}
-            {#if isDisplay}<span class="badge">main</span>{/if}
-          </label>
+          {@const isActive = $wizard.activeCurrencies.includes(c)}
+          {@const meta = DEFAULT_CURRENCY_OPTIONS.find((o) => o.code === c)}
+          <button
+            type="button"
+            class="badge"
+            class:on={isActive}
+            class:locked={isDisplay}
+            disabled={isDisplay}
+            aria-pressed={isActive}
+            onclick={() => toggleCurrency(c)}
+          >
+            <span class="flag" aria-hidden="true">{meta?.flag ?? ''}</span>
+            <span class="code">{c}</span>
+            {#if isDisplay}<span class="pill">main</span>{/if}
+          </button>
         {/each}
       </div>
     </section>
@@ -97,27 +103,69 @@
     color: var(--text-muted);
     font-size: 0.86rem;
   }
-  .checks {
+  .badges {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2) var(--space-4);
+    gap: var(--space-2);
   }
-  label {
+  .badge {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-pill, 999px);
+    padding: 8px 14px;
     cursor: pointer;
+    font: inherit;
+    font-size: 0.92rem;
+    line-height: 1;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease,
+      transform 0.05s ease;
   }
-  label.locked {
-    opacity: 0.85;
+  .badge:hover:not(.locked) {
+    border-color: var(--text-muted);
+    color: var(--text-primary);
   }
-  .badge {
+  .badge:active:not(.locked) {
+    transform: scale(0.97);
+  }
+  .badge.on {
     background: var(--accent-gradient);
+    border-color: transparent;
     color: white;
-    font-size: 0.65rem;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+  }
+  .badge.locked {
+    cursor: not-allowed;
+    background: var(--accent-gradient);
+    border-color: transparent;
+    color: white;
+    opacity: 0.92;
+  }
+  .badge .flag {
+    font-size: 1.05em;
+  }
+  .badge .code {
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .badge .pill {
+    background: rgba(255, 255, 255, 0.22);
+    color: white;
+    font-size: 0.62rem;
     padding: 1px 6px;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-pill, 999px);
     text-transform: uppercase;
     letter-spacing: 0.08em;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .badge {
+      transition: none;
+    }
+    .badge:active:not(.locked) {
+      transform: none;
+    }
   }
 </style>

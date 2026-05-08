@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Onboarding currency selection got the same treatment as the language picker. The "moeda principal / display currency" field is now a `CurrencyDropdown.svelte` (flag + ISO code + currency name in an accessible listbox, mirroring the language dropdown). The "moedas que você usa / currencies you use" row replaces the checkbox grid with clickable pill badges (`aria-pressed` toggle, gradient fill when active, locked state for the display currency, scale-down on press, respects `prefers-reduced-motion`). Default currency metadata moved into `src/components/currencyOptions.ts` so it can be imported from both the dropdown and the wizard step.
 - Onboarding language picker is now a flag-emoji dropdown (`src/components/LanguageDropdown.svelte` — accessible listbox with click-outside / Esc / arrow-key navigation, 🇧🇷 🇺🇸 🇫🇷 🇪🇸) replacing the four-radio row in `Step1Language.svelte`. Picking a language now applies it instantly via `setLocale(...)` instead of waiting for `applyWizard` at the end of the wizard, so every `$t(...)` on screen re-renders as soon as the user selects an option.
 
 ### Added
