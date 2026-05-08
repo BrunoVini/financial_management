@@ -139,6 +139,55 @@ describe('accountBalance', () => {
     expect(accountBalance(s, brlId, '2026-05')).toBe(540);
   });
 
+  it('does not double-count incomes when two accounts share a currency', () => {
+    // Given: two BRL accounts (BRL1 first) and a 500 BRL extra income
+    let s = defaultStore();
+    s = addAccount(s, { name: 'BRL1', currency: 'BRL', openingBalance: 0 });
+    s = addAccount(s, { name: 'BRL2', currency: 'BRL', openingBalance: 0 });
+    const id1 = s.accounts[0].id;
+    const id2 = s.accounts[1].id;
+    s = createMonth(s, '2026-05', { BRL: 0 });
+    s = addIncome(s, '2026-05', { amount: 500, currency: 'BRL', date: '2026-05-15' }).store;
+
+    // When/Then: only the first BRL account receives the credit; sum across all
+    //            accounts equals the income (no double-counting).
+    expect(accountBalance(s, id1, '2026-05')).toBe(500);
+    expect(accountBalance(s, id2, '2026-05')).toBe(0);
+  });
+
+  it('does not double-count salary or fx transfers across same-currency accounts', () => {
+    // Given: two USD accounts and one BRL account; a 4000 USD salary and a
+    //        100 USD -> 540 BRL fx transfer in May
+    let s = defaultStore();
+    s = addAccount(s, { name: 'USD1', currency: 'USD', openingBalance: 0 });
+    s = addAccount(s, { name: 'USD2', currency: 'USD', openingBalance: 0 });
+    s = addAccount(s, { name: 'BRL', currency: 'BRL', openingBalance: 0 });
+    const usd1 = s.accounts[0].id;
+    const usd2 = s.accounts[1].id;
+    const brl = s.accounts[2].id;
+    s = createMonth(s, '2026-05', { USD: 0, BRL: 0 });
+    s = setSalaryReceived(s, '2026-05', {
+      amount: 4000,
+      currency: 'USD',
+      rateToDisplay: 5.4,
+      receivedAt: '2026-05-05',
+    });
+    s = addFxTransfer(s, '2026-05', {
+      fromCurrency: 'USD',
+      toCurrency: 'BRL',
+      fromAmount: 100,
+      toAmount: 540,
+      rate: 5.4,
+      date: '2026-05-12',
+    }).store;
+
+    // When/Then: salary and the fx outflow only hit USD1 (first); BRL
+    //            inflow hits the only BRL account.
+    expect(accountBalance(s, usd1, '2026-05')).toBe(3900);
+    expect(accountBalance(s, usd2, '2026-05')).toBe(0);
+    expect(accountBalance(s, brl, '2026-05')).toBe(540);
+  });
+
   it('only counts months up to and including monthKey', () => {
     // Given: a BRL account with an expense in June
     let s = addAccount(defaultStore(), { name: 'BRL', currency: 'BRL', openingBalance: 1000 });

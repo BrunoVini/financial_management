@@ -25,21 +25,27 @@ interface MonthDelta {
   out: number;
 }
 
-function monthDelta(month: Month, account: Account): MonthDelta {
+function monthDelta(month: Month, account: Account, isCurrencyPrimary: boolean): MonthDelta {
   let inSum = 0;
   let outSum = 0;
   for (const e of month.expenses) {
     if (e.accountId === account.id) outSum += e.amount;
   }
-  for (const i of month.extraIncomes) {
-    if (i.currency === account.currency) inSum += i.amount;
-  }
-  if (month.salary && month.salary.currency === account.currency) {
-    inSum += month.salary.amount;
-  }
-  for (const fx of month.fxTransfers) {
-    if (fx.fromCurrency === account.currency) outSum += fx.fromAmount;
-    if (fx.toCurrency === account.currency) inSum += fx.toAmount;
+  // Income / salary / fx-transfer transactions don't carry an `accountId`,
+  // so they are attributed by currency. To avoid double-counting when more
+  // than one account shares a currency, only the first such account
+  // (insertion order) receives the credit.
+  if (isCurrencyPrimary) {
+    for (const i of month.extraIncomes) {
+      if (i.currency === account.currency) inSum += i.amount;
+    }
+    if (month.salary && month.salary.currency === account.currency) {
+      inSum += month.salary.amount;
+    }
+    for (const fx of month.fxTransfers) {
+      if (fx.fromCurrency === account.currency) outSum += fx.fromAmount;
+      if (fx.toCurrency === account.currency) inSum += fx.toAmount;
+    }
   }
   return { in: inSum, out: outSum };
 }
@@ -47,15 +53,18 @@ function monthDelta(month: Month, account: Account): MonthDelta {
 /**
  * Account balance at the end of `monthKey` (inclusive). Folds in every
  * transaction (expenses by accountId; incomes / salary / fxTransfers by
- * matching currency) up to that month from `account.openingBalance`.
+ * matching currency, attributed to the first account of that currency)
+ * up to that month from `account.openingBalance`.
  */
 export function accountBalance(store: Store, accountId: string, monthKey: MonthKey): number {
   const account = getAccount(store, accountId);
   if (!account) return 0;
+  const primaryByCurrency = store.accounts.find((a) => a.currency === account.currency);
+  const isCurrencyPrimary = primaryByCurrency?.id === account.id;
   let balance = account.openingBalance;
   for (const key of Object.keys(store.months).sort()) {
     if (key > monthKey) continue;
-    const { in: inSum, out: outSum } = monthDelta(store.months[key], account);
+    const { in: inSum, out: outSum } = monthDelta(store.months[key], account, isCurrencyPrimary);
     balance += inSum - outSum;
   }
   return balance;

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Account balances no longer double-count incomes / salary / fx-transfer credits when more than one account shares a currency (`src/lib/db/accounts.ts`). These transaction kinds carry no `accountId` and were previously credited to *every* account of the matching currency, inflating both per-account balances and the net-worth total. They are now attributed only to the first account of that currency (insertion order). Two new tests cover the two-BRL-accounts and two-USD-accounts scenarios.
 - Rates fetch now flows through `appStore` (`src/lib/rates.ts` + `src/App.svelte`): `ensureRates(symbols, currentCache)` is a pure async fetcher returning `{ rates, fetchedAt, stale, cache }`; the caller persists `cache` via `mutate(...)`. This fixes two bugs: (1) UI used to read `$appStore.ratesCache` which stayed `null` after `ensureRates` wrote directly to `localStorage`, forcing a page reload to see converted values; (2) the previous `loadStore()` → `await fetch` → `saveStore()` sequence could overwrite a concurrent expense write performed during the in-flight fetch, causing silent data loss. Removed unused `clearRatesCache()` helper.
 
 ### Changed
